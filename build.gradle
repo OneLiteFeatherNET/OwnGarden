@@ -1,46 +1,39 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'java'
-    id 'maven'
+    id 'maven-publish'
     id 'idea'
-    id 'org.jetbrains.kotlin.jvm' version '1.4.10'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.22'
 }
 
 group = 'fr.skyost'
-version = '0.2.5'
+version = '1.0.0'
 
-sourceCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
     mavenCentral()
-    maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url = 'https://repo.papermc.io/repository/maven-public/' }
     maven { url = 'https://maven.enginehub.org/repo/' }
     maven { url = 'https://repo.codemc.org/repository/maven-public' }
     maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-    compileOnly fileTree(dir: 'libs', include: ['*.jar'])
-
-    shadow 'org.spigotmc:spigot-api:1.16.3-R0.1-SNAPSHOT'
+    compileOnly 'io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT'
     implementation 'org.bstats:bstats-bukkit-lite:1.5'
     implementation 'org.zeroturnaround:zt-zip:1.14'
     implementation 'com.eclipsesource.minimal-json:minimal-json:0.9.5'
-    shadow 'com.sk89q.worldedit:worldedit-bukkit:7.2.0-SNAPSHOT'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.3.0'
 }
 
 shadowJar {
-    setDestinationDir(new File(rootProject.projectDir, 'build/release/'))
     mergeServiceFiles()
     relocate 'org.bstats.bukkit', 'fr.skyost.owngarden.util.bstats'
-    from('src/main/res') {
-        into('/')
-    }
 }
 
 compileKotlin {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 }
