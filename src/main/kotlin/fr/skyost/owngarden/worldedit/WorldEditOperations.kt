@@ -203,7 +203,7 @@ class WorldEditOperations(private val plugin: OwnGarden) {
         if (isSponge) {
             target = target.value.getOrDefault("Metadata", CompoundTag(HashMap())) as CompoundTag
         }
-        val value: MutableMap<String, Tag> = HashMap(target.value)
+        val value: MutableMap<String, Tag<*, *>> = target.value.toMutableMap()
         value.remove("WEOriginX")
         value.remove("WEOriginY")
         value.remove("WEOriginZ")
@@ -212,7 +212,7 @@ class WorldEditOperations(private val plugin: OwnGarden) {
         value.remove("WEOffsetZ")
         target = target.setValue(value)
         if (isSponge) {
-            val rootValue: MutableMap<String, Tag> = HashMap(root.value)
+            val rootValue: MutableMap<String, Tag<*, *>> = root.value.toMutableMap()
             rootValue["Metadata"] = target
             rootValue["Offset"] = IntArrayTag(intArrayOf(0, 0, 0))
             root = root.setValue(rootValue)
@@ -228,6 +228,6 @@ class WorldEditOperations(private val plugin: OwnGarden) {
         /**
          * Accepted WorldEdit versions.
          */
-        val WORLDEDIT_VERSIONS = arrayOf("7.2")
+        val WORLDEDIT_VERSIONS = arrayOf("7.2", "7.3")
     }
 }
