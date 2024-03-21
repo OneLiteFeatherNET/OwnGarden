@@ -1,6 +1,7 @@
 package fr.skyost.owngarden.listener
 
 import fr.skyost.owngarden.OwnGarden
+import fr.skyost.owngarden.OwnGarden__
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.event.EventHandler
@@ -11,7 +12,7 @@ import org.bukkit.event.world.StructureGrowEvent
 /**
  * Global events handled by the plugin.
  */
-class GlobalEventsListener(private val plugin: OwnGarden) : Listener {
+class GlobalEventsListener__(private val plugin: OwnGarden__) : Listener {
     /**
      * Returns the plugin instance.
      *

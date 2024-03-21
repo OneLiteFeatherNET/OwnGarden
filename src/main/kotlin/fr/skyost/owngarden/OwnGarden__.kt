@@ -1,11 +1,11 @@
 package fr.skyost.owngarden
 
 import com.google.common.base.Joiner
-import fr.skyost.owngarden.command.OwnGardenCommand
-import fr.skyost.owngarden.config.PluginConfig
-import fr.skyost.owngarden.listener.GlobalEventsListener
+import fr.skyost.owngarden.command.OwnGardenCommand__
+import fr.skyost.owngarden.config.PluginConfig__
+import fr.skyost.owngarden.listener.GlobalEventsListener__
 import fr.skyost.owngarden.util.Skyupdater
-import fr.skyost.owngarden.worldedit.WorldEditOperations
+import fr.skyost.owngarden.worldedit.WorldEditOperations__
 import org.bstats.bukkit.MetricsLite
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -17,16 +17,16 @@ import java.io.File
 /**
  * The OwnGarden plugin class.
  */
-class OwnGarden : JavaPlugin() {
+class OwnGarden__ : JavaPlugin() {
     /**
      * The plugin config.
      */
-    var pluginConfig: PluginConfig? = null
+    var pluginConfig: PluginConfig__? = null
 
     /**
      * The WorldEdit operations.
      */
-    var worldEditOperations: WorldEditOperations? = null
+    var worldEditOperations: WorldEditOperations__? = null
 
     override fun onEnable() {
         try {
@@ -36,9 +36,9 @@ class OwnGarden : JavaPlugin() {
                 Bukkit.getPluginManager().disablePlugin(this)
                 return
             }
-            worldEditOperations = WorldEditOperations(this)
+            worldEditOperations = WorldEditOperations__(this)
             if (!worldEditOperations!!.checkWorldEditVersion()) {
-                log(ChatColor.RED, "Incorrect WorldEdit version. Current accepted ones are : " + Joiner.on(", ").join(WorldEditOperations.WORLDEDIT_VERSIONS) + ".")
+                log(ChatColor.RED, "Incorrect WorldEdit version. Current accepted ones are : " + Joiner.on(", ").join(WorldEditOperations__.WORLDEDIT_VERSIONS) + ".")
                 Bukkit.getPluginManager().disablePlugin(this)
                 return
             }
@@ -46,7 +46,7 @@ class OwnGarden : JavaPlugin() {
             /* CONFIGURATION : */
             log(ChatColor.GOLD, "Loading the configuration...")
 
-            val pluginConfig = PluginConfig(dataFolder)
+            val pluginConfig = PluginConfig__(dataFolder)
             this.pluginConfig = pluginConfig
             pluginConfig.load()
             if (pluginConfig.enableUpdater) {
@@ -90,10 +90,10 @@ class OwnGarden : JavaPlugin() {
             }
 
             /* REGISTERING EVENTS : */
-            Bukkit.getPluginManager().registerEvents(GlobalEventsListener(this), this)
+            Bukkit.getPluginManager().registerEvents(GlobalEventsListener__(this), this)
 
             /* REGISTERING COMMANDS : */
-            getCommand("owngarden")!!.setExecutor(OwnGardenCommand(this))
+            getCommand("owngarden")!!.setExecutor(OwnGardenCommand__(this))
             val description = description
             log(ChatColor.RESET, "Enabled " + ChatColor.GREEN + name + " v" + description.version + ChatColor.GOLD + " by " + Joiner.on(' ').join(description.authors) + ChatColor.RESET + " !")
         } catch (ex: Exception) {
@@ -108,7 +108,9 @@ class OwnGarden : JavaPlugin() {
      * @param schematicsDirectory The schematics directory.
      */
     private fun extractSamples(schematicsDirectory: File?) {
-        ZipUtil.unpack(file, schematicsDirectory) { name: String -> if (name.startsWith("schematics/")) name.replaceFirst("schematics/".toRegex(), "") else null }
+        ZipUtil.unpack(file, schematicsDirectory) {
+            name: String -> if (name.startsWith("schematics/")) name.replaceFirst("schematics/".toRegex(), "") else null
+        }
     }
 
     /**

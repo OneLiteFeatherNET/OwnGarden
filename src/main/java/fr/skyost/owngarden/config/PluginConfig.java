@@ -77,33 +77,18 @@ public class PluginConfig extends Skyoconfig {
 	 */
 
 	public List<String> getSchematics(final Material material) {
-		switch(material) {
-		case OAK_SAPLING: // Oak
-		case OAK_LOG:
-			return saplingOakSchematics;
-		case SPRUCE_SAPLING: // Spruce
-		case SPRUCE_LOG:
-			return saplingSpruceSchematics;
-		case BIRCH_SAPLING: // Birch
-		case BIRCH_LOG:
-			return saplingBirchSchematics;
-		case JUNGLE_SAPLING: // Jungle
-		case JUNGLE_LOG:
-			return saplingJungleSchematics;
-		case ACACIA_SAPLING: // Acacia
-		case ACACIA_LOG:
-			return saplingAcaciaSchematics;
-		case DARK_OAK_SAPLING: // Dark Oak
-		case DARK_OAK_LOG:
-			return saplingDarkOakSchematics;
-		case RED_MUSHROOM: // Red mushroom
-		case MUSHROOM_STEM:
-			return mushroomRedSchematics;
-		case BROWN_MUSHROOM: // Brown mushroom
-			return mushroomBrownSchematics;
-		}
+        return switch (material) { // Oak
+            case OAK_SAPLING, OAK_LOG -> saplingOakSchematics; // Spruce
+            case SPRUCE_SAPLING, SPRUCE_LOG -> saplingSpruceSchematics; // Birch
+            case BIRCH_SAPLING, BIRCH_LOG -> saplingBirchSchematics; // Jungle
+            case JUNGLE_SAPLING, JUNGLE_LOG -> saplingJungleSchematics; // Acacia
+            case ACACIA_SAPLING, ACACIA_LOG -> saplingAcaciaSchematics; // Dark Oak
+            case DARK_OAK_SAPLING, DARK_OAK_LOG -> saplingDarkOakSchematics; // Red mushroom
+            case RED_MUSHROOM, MUSHROOM_STEM -> mushroomRedSchematics; // Red mushroom
+            case BROWN_MUSHROOM -> mushroomBrownSchematics; // Brown mushroom
+            default -> List.of();
+        };
 
-		return null;
-	}
+    }
 
 }

@@ -5,7 +5,6 @@ import com.eclipsesource.json.JsonObject;
 import com.google.common.base.Joiner;
 import com.google.common.primitives.Primitives;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -18,6 +17,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -38,9 +38,9 @@ import java.util.Map.Entry;
 
 public class Skyoconfig {
 
-	private static final transient char DEFAULT_SEPARATOR = '_';
-	private static final transient String LINE_SEPARATOR = System.lineSeparator();
-	private static final transient String TEMP_CONFIG_SECTION = "temp";
+	private static final char DEFAULT_SEPARATOR = '_';
+	private static final String LINE_SEPARATOR = System.lineSeparator();
+	private static final String TEMP_CONFIG_SECTION = "temp";
 
 	private transient File configFile;
 	private transient List<String> header;
@@ -127,7 +127,7 @@ public class Skyoconfig {
 			return field.getName().replace(DEFAULT_SEPARATOR, '.');
 		}
 		final String name = options.name();
-		if(name.equals("")) {
+		if(name.isEmpty()) {
 			return field.getName().replace(DEFAULT_SEPARATOR, '.');
 		}
 		return name;
@@ -157,7 +157,7 @@ public class Skyoconfig {
 
 	private void saveConfig(final YamlConfiguration config) throws IOException {
 		if(header != null && header.size() > 0) {
-			config.options().header(Joiner.on(LINE_SEPARATOR).join(header));
+			config.options().setHeader(List.of(Joiner.on(LINE_SEPARATOR).join(header)));
 		}
 		config.save(configFile);
 	}
@@ -237,7 +237,8 @@ public class Skyoconfig {
 				final Object value = section.get(key);
 				unserializedMap.put(key, deserializeObject(value.getClass(), value));
 			}
-			final Object map = clazz.newInstance();
+			final Constructor cn = clazz.getConstructor();
+			final Object map = cn.newInstance();
 			clazz.getMethod("putAll", Map.class).invoke(map, unserializedMap);
 			return map;
 		}
@@ -256,8 +257,10 @@ public class Skyoconfig {
 			final JsonObject jsonObject = Json.parse(object.toString()).asObject();
 			return new Vector(Double.parseDouble(jsonObject.get("x").asString()), Double.parseDouble(jsonObject.get("y").asString()), Double.parseDouble(jsonObject.get("z").asString()));
 		}
-		return ChatColor.translateAlternateColorCodes('&', object.toString());
+		return object.toString().replace('&', color);
 	}
+
+	private static final char color = 0xA7; // §
 
 	/**
 	 * Serializes an <b>Object</b> to the configuration.
@@ -268,10 +271,9 @@ public class Skyoconfig {
 	 * @return The serialized <b>Object</b>.
 	 */
 
-	@SuppressWarnings("unchecked")
 	private Object serializeObject(final Object object, final YamlConfiguration config) {
 		if(object instanceof String) {
-			return object.toString().replace(ChatColor.COLOR_CHAR, '&');
+			return object.toString().replace(color, '&');
 		}
 		if(object instanceof Enum) {
 			return ((Enum<?>)object).name();
@@ -286,14 +288,13 @@ public class Skyoconfig {
 		}
 		if(object instanceof List) {
 			final List<Object> result = new ArrayList<>();
-			for(final Object value : (List<?>)object) {
+			for(final Object value : (List<?>) object) {
 				result.add(serializeObject(value, config));
 			}
 			return result;
 		}
-		if(object instanceof Location) {
-			final Location location = (Location)object;
-			final JsonObject jsonObject = new JsonObject();
+		if(object instanceof final Location location) {
+            final JsonObject jsonObject = new JsonObject();
 			jsonObject.add("world", location.getWorld().getName());
 			jsonObject.add("x", location.getX());
 			jsonObject.add("y", location.getY());
@@ -302,9 +303,8 @@ public class Skyoconfig {
 			jsonObject.add("pitch", location.getPitch());
 			return jsonObject.toString();
 		}
-		if(object instanceof Vector) {
-			final Vector vector = (Vector)object;
-			final JsonObject jsonObject = new JsonObject();
+		if(object instanceof final Vector vector) {
+            final JsonObject jsonObject = new JsonObject();
 			jsonObject.add("x", vector.getX());
 			jsonObject.add("y", vector.getY());
 			jsonObject.add("z", vector.getZ());

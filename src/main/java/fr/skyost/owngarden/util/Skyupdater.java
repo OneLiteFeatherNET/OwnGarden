@@ -12,14 +12,14 @@ import org.bukkit.plugin.Plugin;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 /**
  * A simple auto-updater.
- * <br>Please follow this link to read more about checking for updates in your plugin : https://www.skyost.eu/Skyupdater.txt.
+ * <br>Please follow this link to read more about checking for updates in your plugin : <a href="https://www.skyost.eu/Skyupdater.txt">...</a>.
  * <br><br>Thanks to Gravity for his updater (this file uses some parts of his code) !
- *
  * Please note that it needs minimal-json to work.
  *
  * @author <a href="https://www.skyost.eu">Skyost</a>.
@@ -130,17 +130,17 @@ public class Skyupdater {
 	}
 
 	/**
-	 * Initializes Skyupdater.
-	 *
-	 * @param plugin Your plugin.
-	 * @param id Your plugin ID on BukkitDev (you can get it here : https://api.curseforge.com/servermods/projects?search=your+plugin).
-	 * @param pluginFile The plugin file. You can get it from your plugin using <i>getFile()</i>.
-	 * @param download If you want to download the file.
-	 * @param announce If you want to announce the progress of the update.
-	 *
-	 * @throws IOException I/O error.
-	 * @throws InvalidConfigurationException If there is a problem with Skyupdater's config.
-	 */
+     * Initializes Skyupdater.
+     *
+     * @param plugin Your plugin.
+     * @param id Your plugin ID on BukkitDev (you can get it here : <a href="https://api.curseforge.com/servermods/projects?search=your+plugin">...</a>).
+     * @param pluginFile The plugin file. You can get it from your plugin using <i>getFile()</i>.
+     * @param download If you want to download the file.
+     * @param announce If you want to announce the progress of the update.
+     *
+     * @throws IOException I/O error.
+     * @throws InvalidConfigurationException If there is a problem with Skyupdater's config.
+     */
 
 	public Skyupdater(final Plugin plugin, final int id, final File pluginFile, final boolean download, final boolean announce) throws IOException, InvalidConfigurationException {
 		this.plugin = plugin;
@@ -161,24 +161,24 @@ public class Skyupdater {
 
 		final String lineSeparator = System.lineSeparator();
 		final StringBuilder header = new StringBuilder();
-		header.append("Skyupdater configuration - https://www.skyost.eu/Skyupdater.txt" + lineSeparator + lineSeparator);
-		header.append("What is Skyupdater ?" + lineSeparator);
-		header.append("Skyupdater is a simple updater created by Skyost (https://www.skyost.eu). It aims to auto-update Bukkit Plugins." + lineSeparator + lineSeparator);
-		header.append("What happens during the update process ?" + lineSeparator);
-		header.append("1. Connection to curseforge.com." + lineSeparator);
-		header.append("2. Plugin version compared against version on curseforge.com." + lineSeparator);
-		header.append("3. Downloading of the plugin from curseforge.com if a newer version is found." + lineSeparator + lineSeparator);
-		header.append("So what is this file ?" + lineSeparator);
-		header.append("This file is just a config file for this auto-updater." + lineSeparator + lineSeparator);
-		header.append("Configuration :" + lineSeparator);
-		header.append("'enable': Choose if you want to enable the auto-updater." + lineSeparator);
-		header.append("'api-key': OPTIONAL. Your BukkitDev API Key." + lineSeparator + lineSeparator);
-		header.append("Good game, I hope you will enjoy your plugins always up-to-date ;)" + lineSeparator);
+		header.append("Skyupdater configuration - https://www.skyost.eu/Skyupdater.txt").append(lineSeparator).append(lineSeparator);
+		header.append("What is Skyupdater ?").append(lineSeparator);
+		header.append("Skyupdater is a simple updater created by Skyost (https://www.skyost.eu). It aims to auto-update Bukkit Plugins.").append(lineSeparator).append(lineSeparator);
+		header.append("What happens during the update process ?").append(lineSeparator);
+		header.append("1. Connection to curseforge.com.").append(lineSeparator);
+		header.append("2. Plugin version compared against version on curseforge.com.").append(lineSeparator);
+		header.append("3. Downloading of the plugin from curseforge.com if a newer version is found.").append(lineSeparator).append(lineSeparator);
+		header.append("So what is this file ?").append(lineSeparator);
+		header.append("This file is just a config file for this auto-updater.").append(lineSeparator).append(lineSeparator);
+		header.append("Configuration :").append(lineSeparator);
+		header.append("'enable': Choose if you want to enable the auto-updater.").append(lineSeparator);
+		header.append("'api-key': OPTIONAL. Your BukkitDev API Key.").append(lineSeparator).append(lineSeparator);
+		header.append("Good game, I hope you will enjoy your plugins always up-to-date ;)").append(lineSeparator);
 
 		final File configFile = new File(skyupdaterFolder, "skyupdater.yml");
 		if(!configFile.exists()) {
 			configFile.createNewFile();
-			config.options().header(header.toString());
+			config.options().setHeader(List.of(header.toString()));
 			config.set("enable", true);
 			config.set("api-key", "NONE");
 			config.save(configFile);
@@ -311,26 +311,25 @@ public class Skyupdater {
 	 */
 
 	public static boolean compareVersions(final String versionTo, final String versionWith) {
-		return normalisedVersion(versionTo, ".", 4).compareTo(normalisedVersion(versionWith, ".", 4)) > 0;
+		return normalizedVersion(versionTo).compareTo(normalizedVersion(versionWith)) > 0;
 	}
+
+	private static final String split = ".";
+	private static final int width = 4;
 
 	/**
 	 * Gets the formatted name of a version.
 	 * <br>Used for the method <b>compareVersions(...)</b> of this class.
 	 *
 	 * @param version The version you want to addLocation.
-	 * @param separator The separator between the numbers of this version.
-	 * @param maxWidth The max width of the formatted version.
-	 *
 	 * @return The formatted version of your version.
-	 *
 	 * @author Peter Lawrey.
 	 */
 
-	private static String normalisedVersion(final String version, final String separator, final int maxWidth) {
+	private static String normalizedVersion(final String version) {
 		final StringBuilder stringBuilder = new StringBuilder();
-		for(final String normalised : Pattern.compile(separator, Pattern.LITERAL).split(version)) {
-			stringBuilder.append(String.format("%" + maxWidth + 's', normalised));
+		for (final String normalised : Pattern.compile(split, Pattern.LITERAL).split(version)) {
+			stringBuilder.append(String.format("%" + width + 's', normalised));
 		}
 		return stringBuilder.toString();
 	}
@@ -394,7 +393,8 @@ public class Skyupdater {
 					final JsonArray jsonArray = Json.parse(response).asArray();
 					updateData = jsonArray.get(jsonArray.size() - 1).asObject();
 
-					if(compareVersions(getLatestFileInfo(InfoType.FILE_TITLE).split("^v|[\\s_-]v")[1].split(" ")[0], plugin.getDescription().getVersion()) && getLatestFileInfo(InfoType.DOWNLOAD_URL).toLowerCase().endsWith(".jar")) {
+					if(compareVersions(getLatestFileInfo(InfoType.FILE_TITLE).split("^v|[\\s_-]v")[1].split(" ")[0],
+						plugin.getPluginMeta().getVersion()) && getLatestFileInfo(InfoType.DOWNLOAD_URL).toLowerCase().endsWith(".jar")) {
 						result = Result.UPDATE_AVAILABLE;
 
 						if(download) {
@@ -422,7 +422,8 @@ public class Skyupdater {
 
 				}
 				else {
-					log(Level.SEVERE, "The ID '" + id + "' was not found (or no files found for this project) ! Maybe the author(s) (" + Joiner.on(", ").join(plugin.getDescription().getAuthors()) + ") of '" + pluginName + "' has/have misconfigured his/their plugin ?");
+					log(Level.SEVERE, "The ID '" + id + "' was not found (or no files found for this project) ! Maybe the author(s) ("
+						+ Joiner.on(", ").join(plugin.getPluginMeta().getAuthors()) + ") of '" + pluginName + "' has/have misconfigured his/their plugin ?");
 					result = Result.ERROR;
 				}
 

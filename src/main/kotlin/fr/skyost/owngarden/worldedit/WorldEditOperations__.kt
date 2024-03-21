@@ -11,7 +11,7 @@ import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.math.transform.AffineTransform
 import com.sk89q.worldedit.session.ClipboardHolder
 import com.sk89q.worldedit.util.io.Closer
-import fr.skyost.owngarden.OwnGarden
+import fr.skyost.owngarden.OwnGarden__
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Location
@@ -24,7 +24,7 @@ import java.util.zip.GZIPOutputStream
 /**
  * Represents available WorldEdit operations.
  */
-class WorldEditOperations(private val plugin: OwnGarden) {
+class WorldEditOperations__(private val plugin: OwnGarden__) {
     /**
      * Returns whether the current WorldEdit version should be accepted.
      *
