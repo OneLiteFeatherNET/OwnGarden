@@ -28,9 +28,9 @@ tasks {
         mergeServiceFiles()
         relocate("org.bstats.bukkit", "fr.skyost.owngarden.util.bstats")
     }
-    compileKotlin {
+    /*compileKotlin {
         kotlinOptions {
             jvmTarget = "17"
         }
-    }
+    }*/
 }
