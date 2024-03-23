@@ -1,10 +1,11 @@
 package fr.skyost.owngarden.worldedit;
 
-import com.sk89q.jnbt.*;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
@@ -17,42 +18,23 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.io.Closer;
 import fr.skyost.owngarden.OwnGarden;
 import fr.skyost.owngarden.config.PluginConfig;
+import net.kyori.adventure.nbt.BinaryTagIO;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.kyori.adventure.nbt.IntArrayBinaryTag;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 
 import java.io.*;
-import java.security.SecureRandom;
-import java.util.*;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents available WorldEdit operations.
  */
-public record WorldEditOperations(OwnGarden plugin) {
-
-    private static final Random rnd = new SecureRandom();
-    /**
-     * Accepted WorldEdit versions.
-     */
-    public static final String[] WORLDEDIT_VERSIONS = {"7.2", "7.3"};
-    /**
-     * Returns whether the current WorldEdit version should be accepted.
-     *
-     * @return Whether the current WorldEdit version should be accepted.
-     */
-    public boolean checkWorldEditVersion() {
-        final String version = Bukkit.getPluginManager().getPlugin("WorldEdit").getPluginMeta().getVersion();
-        for (final String prefix : WORLDEDIT_VERSIONS) {
-            if (version.startsWith(prefix)) {
-                return true;
-            }
-        }
-        return false;
-    }
+public record WorldEditUtils(OwnGarden plugin) implements Utils {
 
     /**
      * Tests if each schematic is valid.
@@ -109,7 +91,7 @@ public record WorldEditOperations(OwnGarden plugin) {
      * @throws IOException If any I/O exception occurs.
      */
 
-    public ClipboardHolder loadSchematic(final String schematic) throws IOException {
+    private ClipboardHolder loadSchematic(final String schematic) throws IOException {
         final File file = getFile(schematic);
         if (!file.exists()) {
             throw new FileNotFoundException("Schematic not found : $schematic.");
@@ -138,6 +120,7 @@ public record WorldEditOperations(OwnGarden plugin) {
      *
      * @return Whether the operation has been a success.
      */
+
     public boolean growTree(final List<String> schematics, final Location location) {
         if (schematics == null || schematics.isEmpty()) {
             return false;
@@ -154,11 +137,12 @@ public record WorldEditOperations(OwnGarden plugin) {
                     holder.setTransform(transform);
                 }
             }
-            final BlockVector3 dimensions = holder.getClipboard().getDimensions();
+            final Clipboard clip = holder.getClipboards().get(0);
+            final BlockVector3 dimensions = clip.getDimensions();
             if (plugin.pluginConfig.schematicsCheckHeight && !checkHeight(dimensions, location)) {
                 return false;
             }
-            holder.getClipboard().setOrigin(BlockVector3.at(dimensions.x() >> 1, 0, dimensions.z() >> 1));
+            clip.setOrigin(BlockVector3.at(dimensions.getBlockX() >> 1, 0, dimensions.getBlockZ() >> 1));
             final EditSession session = WorldEdit.getInstance().newEditSession(new BukkitWorld(location.getWorld()));
             final Operation operation = holder
                 .createPaste(session)
@@ -185,20 +169,24 @@ public record WorldEditOperations(OwnGarden plugin) {
      *
      * @return Whether there is a floor above the tree.
      */
+
     private boolean checkHeight(final BlockVector3 dimensions, final Location location) {
         final World world = location.getWorld();
+        final EditSession es = WorldEdit.getInstance()
+            .newEditSession(BukkitAdapter.adapt(world));
         final int blockX = location.getBlockX();
         final int blockY = location.getBlockY();
         final int blockZ = location.getBlockZ();
-        for (int x = blockX + dimensions.x(); x != blockX; x--) {
-            for (int y = blockY + dimensions.y(); y != blockY; y--) {
-                for (int z = blockZ + dimensions.z(); z != blockZ; z--) {
-                    if (!world.getBlockAt(x, y, z).getType().isAir()) {
+        for (int x = blockX + dimensions.getBlockX(); x != blockX; x--) {
+            for (int y = blockY + dimensions.getBlockY(); y != blockY; y--) {
+                for (int z = blockZ + dimensions.getBlockZ(); z != blockZ; z--) {
+                    if (!es.getBlock(BlockVector3.at(x, y, z)).isAir()) {
                         return false;
                     }
                 }
             }
         }
+        es.close();
         return true;
     }
 
@@ -210,34 +198,27 @@ public record WorldEditOperations(OwnGarden plugin) {
      *
      * @throws IOException If any I/O exception occurs.
      */
+
     @SuppressWarnings("deprecation")
     private void removeWorldEditMetaData(final ClipboardFormat format, final File file) throws IOException {
-        final NBTInputStream input = new NBTInputStream(new GZIPInputStream(new FileInputStream(file)));
-        CompoundTag root = (CompoundTag) input.readNamedTag().getTag();
-        CompoundTag target = root;
+        final CompoundBinaryTag root = BinaryTagIO.reader().read(new FileInputStream(file), BinaryTagIO.Compression.GZIP);
+        CompoundBinaryTag target = root;
         final boolean isSponge = Objects.equals(format.getPrimaryFileExtension(),
             BuiltInClipboardFormat.SPONGE_SCHEMATIC.getPrimaryFileExtension());
         if (isSponge) {
-            target = (CompoundTag) target.getValue().getOrDefault("Metadata", new CompoundTag(new HashMap<>()));
+            target = target.getCompound("Metadata", CompoundBinaryTag.empty());
         }
-        final Map<String, Tag<?, ?>> value = target.getValue();
-        value.remove("WEOriginX");
-        value.remove("WEOriginY");
-        value.remove("WEOriginZ");
-        value.remove("WEOffsetX");
-        value.remove("WEOffsetY");
-        value.remove("WEOffsetZ");
-        target = target.setValue(value);
+        target.remove("WEOriginX");
+        target.remove("WEOriginY");
+        target.remove("WEOriginZ");
+        target.remove("WEOffsetX");
+        target.remove("WEOffsetY");
+        target.remove("WEOffsetZ");
         if (isSponge) {
-            final Map<String, Tag<?, ?>> rootValue = root.getValue();
-            rootValue.put("Metadata", target);
-            rootValue.put("Offset", new IntArrayTag(new int[] {0, 0, 0}));
-            root = root.setValue(rootValue);
-        } else {
-            root = target;
+            root.put("Metadata", target);
+            root.put("Offset", IntArrayBinaryTag.intArrayBinaryTag(new int[] {0, 0, 0}));
         }
-        final NBTOutputStream output = new NBTOutputStream(new GZIPOutputStream(new FileOutputStream(file)));
-        output.writeNamedTag("Schematic", root);
-        output.close();
+
+        BinaryTagIO.writer().write(root, new FileOutputStream(file));
     }
 }

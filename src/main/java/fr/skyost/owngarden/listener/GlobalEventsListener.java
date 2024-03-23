@@ -17,7 +17,7 @@ import java.util.List;
  */
 public record GlobalEventsListener(OwnGarden plugin) implements Listener {
 
-    private static final BlockFace[] FACES = {BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST,
+    private static final BlockFace[] FACES = {BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SELF,
         BlockFace.SOUTH_EAST, BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST};
 
     /**
@@ -29,7 +29,7 @@ public record GlobalEventsListener(OwnGarden plugin) implements Listener {
     public void onStructureGrow(final StructureGrowEvent event) {
         final Location location = event.getLocation();
         final List<String> schematics = plugin.pluginConfig.getSchematics(location.getBlock().getType());
-        if (plugin.worldEditOperations.growTree(schematics, location)) {
+        if (plugin.operations.growTree(schematics, location)) {
             /*if (schematics == plugin.pluginConfig.saplingDarkOakSchematics) {
                 val current = location.block
                 for (blockFace in FACES) {
@@ -40,9 +40,10 @@ public record GlobalEventsListener(OwnGarden plugin) implements Listener {
                 }
             }*/ // spruce trees can do that too
             final Block current = location.getBlock();
+            final Material type = current.getType();
             for (final BlockFace blockFace : FACES) {
                 final Block relative = current.getRelative(blockFace);
-                if (relative.getType() == Material.DARK_OAK_SAPLING) {
+                if (relative.getType() == type) {
                     relative.setType(Material.AIR, false);
                 }
             }

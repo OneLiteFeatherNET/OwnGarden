@@ -5,7 +5,9 @@ import fr.skyost.owngarden.command.OwnGardenCommand;
 import fr.skyost.owngarden.config.PluginConfig;
 import fr.skyost.owngarden.listener.GlobalEventsListener;
 import fr.skyost.owngarden.util.Skyupdater;
-import fr.skyost.owngarden.worldedit.WorldEditOperations;
+import fr.skyost.owngarden.worldedit.DefaultUtils;
+import fr.skyost.owngarden.worldedit.Utils;
+import fr.skyost.owngarden.worldedit.WorldEditUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bstats.bukkit.MetricsLite;
@@ -30,24 +32,14 @@ public class OwnGarden extends JavaPlugin {
     /**
      * The WorldEdit operations.
      */
-    public WorldEditOperations worldEditOperations = null;
+    public Utils operations = null;
 
     @Override
     public void onEnable() {
         /* WORLDEDIT HOOK : */
-        if (Bukkit.getPluginManager().getPlugin("WorldEdit") == null) {
-            log(NamedTextColor.RED, "WorldEdit must be installed on your server !");
-            Bukkit.getPluginManager().disablePlugin(this);
-            return;
-        }
-        worldEditOperations = new WorldEditOperations(this);
-
-        if (!worldEditOperations.checkWorldEditVersion()) {
-            log(NamedTextColor.RED, "Incorrect WorldEdit version. Current accepted ones are : "
-                + Joiner.on(", ").join(WorldEditOperations.WORLDEDIT_VERSIONS) + ".");
-            Bukkit.getPluginManager().disablePlugin(this);
-            return;
-        }
+        if (Utils.checkWorldEditVersion(this)) {
+            operations = new WorldEditUtils(this);
+        } else operations = new DefaultUtils();
 
         /* CONFIGURATION : */
         log(NamedTextColor.GOLD, "Loading the configuration...");
@@ -79,7 +71,7 @@ public class OwnGarden extends JavaPlugin {
 
         /* TESTING SCHEMATICS : */
         log(NamedTextColor.GOLD, "Testing schematics...");
-        final String[] invalidSchematics = worldEditOperations.testSchematics();
+        final String[] invalidSchematics = operations.testSchematics();
         if (invalidSchematics.length != 0) {
             log(NamedTextColor.RED, "There are some invalid schematics :");
             for (final String invalidSchematic : invalidSchematics) {

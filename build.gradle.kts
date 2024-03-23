@@ -20,7 +20,10 @@ dependencies {
     implementation("org.bstats:bstats-bukkit-lite:1.5")
     implementation("org.zeroturnaround:zt-zip:1.14")
     implementation("com.eclipsesource.minimal-json:minimal-json:0.9.5")
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.0")
+    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit")
+    implementation("net.kyori:adventure-nbt:4.16.0")
+    implementation(platform("com.intellectualsites.bom:bom-newest:1.42")) // Ref: https://github.com/IntellectualSites/bom
+//    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.0")
 }
 
 tasks {
