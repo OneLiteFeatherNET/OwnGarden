@@ -9,6 +9,7 @@ import fr.skyost.owngarden.worldedit.Utils;
 import fr.skyost.owngarden.worldedit.WorldEditUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -43,6 +44,8 @@ public class OwnGarden extends JavaPlugin {
     public static final List<File> mushroomRedSchematics = new ArrayList<>();
     public static final List<File> mushroomBrownSchematics = new ArrayList<>();
 
+    private final ComponentLogger logger = ComponentLogger.logger(getName());
+
     @Override
     public void onEnable() {
         /* WORLDEDIT HOOK : */
@@ -66,6 +69,8 @@ public class OwnGarden extends JavaPlugin {
             throw new RuntimeException(e);
         }
         log(NamedTextColor.GOLD, "Configuration loaded !");
+        log(NamedTextColor.GOLD, "Testing schematics...");
+        loadSchematics();
 
         /* EXTRACTING DEFAULT SCHEMATICS IF NEEDED : */
         /*final File shematicsDirectory = new File(pluginConfig.schematicsDirectory);
@@ -79,8 +84,6 @@ public class OwnGarden extends JavaPlugin {
         }*/
 
         /* TESTING SCHEMATICS : */
-        log(NamedTextColor.GOLD, "Testing schematics...");
-        loadSchematics();
         final File[] invalidSchematics = operations.testSchematics();
         if (invalidSchematics.length != 0) {
             log(NamedTextColor.RED, "There are some invalid schematics :");
@@ -128,7 +131,8 @@ public class OwnGarden extends JavaPlugin {
      * @param message The message.
      */
     public void log(final NamedTextColor color, final String message) {
-        Bukkit.getConsoleSender().sendMessage(Component.text("[" + getName() + "]").append(Component.text(message, color)));
+        logger.info(Component.text(message, color));
+//        Bukkit.getConsoleSender().sendMessage(Component.text("[" + getName() + "]").append(Component.text(message, color)));
     }
 
     /**
@@ -153,6 +157,9 @@ public class OwnGarden extends JavaPlugin {
         };
     }
 
+    /**
+     * Looks and loads all schematics. Creates folders that dont exist.
+     */
 
     public void loadSchematics() {
         final File root = new File(getDataFolder().getAbsolutePath() + "/schematics");

@@ -37,9 +37,4 @@ tasks {
         // Your plugin's jar (or shadowJar if present) will be used automatically.
         minecraftVersion("1.20.4")
     }
-    /*compileKotlin {
-        kotlinOptions {
-            jvmTarget = "17"
-        }
-    }*/
 }
