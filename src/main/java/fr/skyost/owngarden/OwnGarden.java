@@ -4,20 +4,17 @@ import com.google.common.base.Joiner;
 import fr.skyost.owngarden.command.OwnGardenCommand;
 import fr.skyost.owngarden.config.PluginConfig;
 import fr.skyost.owngarden.listener.GlobalEventsListener;
-import fr.skyost.owngarden.util.Skyupdater;
 import fr.skyost.owngarden.worldedit.DefaultUtils;
 import fr.skyost.owngarden.worldedit.Utils;
 import fr.skyost.owngarden.worldedit.WorldEditUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bstats.bukkit.MetricsLite;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.zeroturnaround.zip.ZipUtil;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * The OwnGarden plugin class.
@@ -47,13 +44,13 @@ public class OwnGarden extends JavaPlugin {
         this.pluginConfig = new PluginConfig(getDataFolder());
         try {
             pluginConfig.load();
-            if (pluginConfig.enableUpdater) {
+            /*if (pluginConfig.enableUpdater) {
                 new Skyupdater(this, 103296, getFile(), true, true);
-            }
-            if (pluginConfig.enableMetrics) {
+            }*/ // off for now, no updates D:
+            /*if (pluginConfig.enableMetrics) {
                 new MetricsLite(this);
-            }
-        } catch (InvalidConfigurationException | IOException e) {
+            }*/
+        } catch (InvalidConfigurationException e) {
             throw new RuntimeException(e);
         }
         log(NamedTextColor.GOLD, "Configuration loaded !");

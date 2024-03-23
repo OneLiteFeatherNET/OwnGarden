@@ -18,7 +18,7 @@ public interface Utils {
     /**
      * Accepted WorldEdit versions.
      */
-    String[] WORLDEDIT_VERSIONS = {"7.2", "7.3"};
+    String[] FAWE_VERSIONS = {"7.2", "7.3"};
 
     /**
      * Returns whether the current WorldEdit version should be accepted.
@@ -27,19 +27,19 @@ public interface Utils {
      */
 
     static boolean checkWorldEditVersion(final OwnGarden plugin) {
-        final Plugin we = Bukkit.getPluginManager().getPlugin("WorldEdit");
+        final Plugin we = Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
         if (we == null) {
             plugin.log(NamedTextColor.RED, "WorldEdit must be installed on your server !");
             return false;
         }
         final String version = we.getPluginMeta().getVersion();
-        for (final String prefix : WORLDEDIT_VERSIONS) {
+        for (final String prefix : FAWE_VERSIONS) {
             if (version.startsWith(prefix)) {
                 return true;
             }
         }
-        plugin.log(NamedTextColor.RED, "Incorrect WorldEdit version. Current accepted ones are : "
-            + Joiner.on(", ").join(WorldEditUtils.WORLDEDIT_VERSIONS) + ".");
+        plugin.log(NamedTextColor.RED, "Incorrect WorldEdit version " + version + ". Current accepted ones are : "
+            + Joiner.on(", ").join(WorldEditUtils.FAWE_VERSIONS) + ".");
         return false;
     }
 

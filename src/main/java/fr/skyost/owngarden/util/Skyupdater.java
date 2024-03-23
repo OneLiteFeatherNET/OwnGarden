@@ -12,9 +12,9 @@ import org.bukkit.plugin.Plugin;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * A simple auto-updater.
@@ -170,15 +170,15 @@ public class Skyupdater {
 		header.append("3. Downloading of the plugin from curseforge.com if a newer version is found.").append(lineSeparator).append(lineSeparator);
 		header.append("So what is this file ?").append(lineSeparator);
 		header.append("This file is just a config file for this auto-updater.").append(lineSeparator).append(lineSeparator);
-		header.append("Configuration :").append(lineSeparator);
-		header.append("'enable': Choose if you want to enable the auto-updater.").append(lineSeparator);
-		header.append("'api-key': OPTIONAL. Your BukkitDev API Key.").append(lineSeparator).append(lineSeparator);
+		header.append("Configuration -").append(lineSeparator);
+		header.append("'enable'- Choose if you want to enable the auto-updater.").append(lineSeparator);
+		header.append("'api-key'- OPTIONAL. Your BukkitDev API Key.").append(lineSeparator).append(lineSeparator);
 		header.append("Good game, I hope you will enjoy your plugins always up-to-date ;)").append(lineSeparator);
 
 		final File configFile = new File(skyupdaterFolder, "skyupdater.yml");
 		if(!configFile.exists()) {
 			configFile.createNewFile();
-			config.options().setHeader(List.of(header.toString()));
+			config.options().setHeader(Stream.of(header.toString()).map(hd -> "# " + hd).toList());
 			config.set("enable", true);
 			config.set("api-key", "NONE");
 			config.save(configFile);
