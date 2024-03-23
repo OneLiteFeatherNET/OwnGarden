@@ -6,7 +6,6 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
@@ -18,18 +17,18 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.io.Closer;
 import fr.skyost.owngarden.OwnGarden;
 import fr.skyost.owngarden.config.PluginConfig;
-import net.kyori.adventure.nbt.BinaryTagIO;
-import net.kyori.adventure.nbt.CompoundBinaryTag;
-import net.kyori.adventure.nbt.IntArrayBinaryTag;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Represents available WorldEdit operations.
@@ -41,33 +40,35 @@ public record WorldEditUtils(OwnGarden plugin) implements Utils {
      *
      * @return An array containing the invalid schematics.
      */
-    public String[] testSchematics() {
+    public File[] testSchematics() {
         final PluginConfig config = plugin.pluginConfig;
-        final ArrayList<String> schematics = new ArrayList<>();
-        schematics.addAll(config.saplingOakSchematics);
-        schematics.addAll(config.saplingSpruceSchematics);
-        schematics.addAll(config.saplingBirchSchematics);
-        schematics.addAll(config.saplingJungleSchematics);
-        schematics.addAll(config.saplingAcaciaSchematics);
-        schematics.addAll(config.saplingDarkOakSchematics);
+        final ArrayList<File> schematics = new ArrayList<>();
+        schematics.addAll(OwnGarden.saplingOakSchematics);
+        schematics.addAll(OwnGarden.saplingSpruceSchematics);
+        schematics.addAll(OwnGarden.saplingBirchSchematics);
+        schematics.addAll(OwnGarden.saplingJungleSchematics);
+        schematics.addAll(OwnGarden.saplingAcaciaSchematics);
+        schematics.addAll(OwnGarden.saplingDarkOakSchematics);
+        schematics.addAll(OwnGarden.mushroomBrownSchematics);
+        schematics.addAll(OwnGarden.mushroomRedSchematics);
         final boolean removeWorldEditMetaData = plugin.pluginConfig.schematicsRemoveWorldEditMetaData;
-        final ArrayList<String> invalidSchematics = new ArrayList<>();
-        for (final String schematic : schematics) {
+        final ArrayList<File> invalidSchematics = new ArrayList<>();
+        for (final File schematic : schematics) {
             try {
                 loadSchematic(schematic);
                 if (!removeWorldEditMetaData) {
                     continue;
                 }
-                final File file = getFile(schematic);
-                final ClipboardFormat format = ClipboardFormats.findByFile(file);
+                final ClipboardFormat format = ClipboardFormats.findByFile(schematic);
                 if (format == null) continue;
-                removeWorldEditMetaData(format, file);
+//                removeWorldEditMetaData(format, schematic);
+                Bukkit.getConsoleSender().sendMessage("loaded: " + schematic.getCanonicalPath());
             } catch (IOException ex) {
                 ex.printStackTrace();
                 invalidSchematics.add(schematic);
             }
         }
-        return invalidSchematics.toArray(new String[0]);
+        return invalidSchematics.toArray(new File[0]);
     }
 
     /**
@@ -84,17 +85,16 @@ public record WorldEditUtils(OwnGarden plugin) implements Utils {
     /**
      * Loads a schematic.
      *
-     * @param schematic The schematic file (must be in the schematics directory).
+     * @param file The schematic file (must be in the schematics directory).
      *
      * @return The WorldEdit clipboard holder.
      *
      * @throws IOException If any I/O exception occurs.
      */
 
-    private ClipboardHolder loadSchematic(final String schematic) throws IOException {
-        final File file = getFile(schematic);
+    private ClipboardHolder loadSchematic(final File file) throws IOException {
         if (!file.exists()) {
-            throw new FileNotFoundException("Schematic not found : $schematic.");
+            plugin.log(NamedTextColor.RED, "Schematic not found : " + file.getName());
         }
         final ClipboardFormat format = ClipboardFormats.findByFile(file);
         if (format == null) throw new IllegalArgumentException("Unknown schematic format.");
@@ -121,11 +121,11 @@ public record WorldEditUtils(OwnGarden plugin) implements Utils {
      * @return Whether the operation has been a success.
      */
 
-    public boolean growTree(final List<String> schematics, final Location location) {
+    public boolean growTree(final List<File> schematics, final Location location) {
         if (schematics == null || schematics.isEmpty()) {
             return false;
         }
-        final String file = schematics.get(rnd.nextInt(schematics.size()));
+        final File file = schematics.get(rnd.nextInt(schematics.size()));
         try {
             location.getBlock().setType(Material.AIR, false);
             final ClipboardHolder holder = loadSchematic(file);
@@ -155,7 +155,7 @@ public record WorldEditUtils(OwnGarden plugin) implements Utils {
 
             return true;
         } catch (IOException | MaxChangedBlocksException ex) {
-            plugin.log(NamedTextColor.RED, "Unable to load the schematic : " + file + ".");
+            plugin.log(NamedTextColor.RED, "Unable to load the schematic : " + file.getName() + ".");
             ex.printStackTrace();
         }
         return false;
@@ -196,12 +196,10 @@ public record WorldEditUtils(OwnGarden plugin) implements Utils {
      * @param format The clipboard format.
      * @param file The file.
      *
-     * @throws IOException If any I/O exception occurs.
      */
-
-    @SuppressWarnings("deprecation")
-    private void removeWorldEditMetaData(final ClipboardFormat format, final File file) throws IOException {
-        final CompoundBinaryTag root = BinaryTagIO.reader().read(new FileInputStream(file), BinaryTagIO.Compression.GZIP);
+    //write() breaks the GZIP file format, and this is not needed since origin gets reset anyway later
+    private void removeWorldEditMetaData(final ClipboardFormat format, final File file) {
+        /*final CompoundBinaryTag root = BinaryTagIO.reader().read(new FileInputStream(file), BinaryTagIO.Compression.GZIP);
         CompoundBinaryTag target = root;
         final boolean isSponge = Objects.equals(format.getPrimaryFileExtension(),
             BuiltInClipboardFormat.SPONGE_SCHEMATIC.getPrimaryFileExtension());
@@ -219,6 +217,6 @@ public record WorldEditUtils(OwnGarden plugin) implements Utils {
             root.put("Offset", IntArrayBinaryTag.intArrayBinaryTag(new int[] {0, 0, 0}));
         }
 
-        BinaryTagIO.writer().write(root, new FileOutputStream(file));
+        BinaryTagIO.writer().write(root, new FileOutputStream(file), BinaryTagIO.Compression.GZIP);*/
     }
 }

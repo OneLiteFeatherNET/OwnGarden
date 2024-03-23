@@ -1,12 +1,9 @@
 package fr.skyost.owngarden.config;
 
 import fr.skyost.owngarden.util.Skyoconfig;
-import org.bukkit.Material;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * The plugin configuration.
@@ -32,29 +29,22 @@ public class PluginConfig extends Skyoconfig {
 	@ConfigOptions(name = "schematics.remove-worldedit-metadata")
 	public boolean schematicsRemoveWorldEditMetaData = true;
 
-	@ConfigOptions(name = "sapling.oak")
-	public List<String> saplingOakSchematics = Arrays.asList("oak/1.schematic", "oak/2.schematic", "oak/3.schematic");
+	public String saplingOakDir = "oak";
+//	@ConfigOptions(name = "sapling.oak")
 
-	@ConfigOptions(name = "sapling.spruce")
-	public List<String> saplingSpruceSchematics = Arrays.asList("spruce/1.schematic", "spruce/2.schematic", "spruce/3.schematic");
+	public String saplingSpruceDir = "spruce";
 
-	@ConfigOptions(name = "sapling.birch")
-	public List<String> saplingBirchSchematics = Arrays.asList("birch/1.schematic", "birch/2.schematic", "birch/3.schematic");
+	public String saplingBirchDir = "birch";
 
-	@ConfigOptions(name = "sapling.jungle")
-	public List<String> saplingJungleSchematics = Arrays.asList("jungle/1.schematic", "jungle/2.schematic", "jungle/3.schematic");
+	public String saplingJungleDir = "jungle";
 
-	@ConfigOptions(name = "sapling.acacia")
-	public List<String> saplingAcaciaSchematics = Arrays.asList("acacia/1.schematic", "acacia/2.schematic", "acacia/3.schematic");
+	public String saplingAcaciaDir = "acacia";
 
-	@ConfigOptions(name = "sapling.dark-oak")
-	public List<String> saplingDarkOakSchematics = Arrays.asList("dark_oak/1.schematic", "dark_oak/2.schematic", "dark_oak/3.schematic");
+	public String saplingDarkOakDir = "dark_oak";
 
-	@ConfigOptions(name = "mushroom.brown")
-	public List<String> mushroomBrownSchematics = Arrays.asList("brown_mushroom/1.schem", "brown_mushroom/2.schem", "brown_mushroom/3.schem");
+	public String mushroomBrownDir = "brown_mushroom";
 
-	@ConfigOptions(name = "mushroom.red")
-	public List<String> mushroomRedSchematics = Arrays.asList("red_mushroom/1.schem", "red_mushroom/2.schem", "red_mushroom/3.schem");
+	public String mushroomRedDir = "red_mushroom";
 
 	/**
 	 * Creates a new plugin config instance.
@@ -67,28 +57,4 @@ public class PluginConfig extends Skyoconfig {
 
 		schematicsDirectory = new File(dataFolder, "schematics/").getPath();
 	}
-
-	/**
-	 * Returns the schematics list which corresponds to the specified material (sapling / log).
-	 *
-	 * @param material The material.
-	 *
-	 * @return The corresponding list.
-	 */
-
-	public List<String> getSchematics(final Material material) {
-        return switch (material) { // Oak
-            case OAK_SAPLING, OAK_LOG -> saplingOakSchematics; // Spruce
-            case SPRUCE_SAPLING, SPRUCE_LOG -> saplingSpruceSchematics; // Birch
-            case BIRCH_SAPLING, BIRCH_LOG -> saplingBirchSchematics; // Jungle
-            case JUNGLE_SAPLING, JUNGLE_LOG -> saplingJungleSchematics; // Acacia
-            case ACACIA_SAPLING, ACACIA_LOG -> saplingAcaciaSchematics; // Dark Oak
-            case DARK_OAK_SAPLING, DARK_OAK_LOG -> saplingDarkOakSchematics; // Red mushroom
-            case RED_MUSHROOM, MUSHROOM_STEM -> mushroomRedSchematics; // Red mushroom
-            case BROWN_MUSHROOM -> mushroomBrownSchematics; // Brown mushroom
-            default -> List.of();
-        };
-
-    }
-
 }

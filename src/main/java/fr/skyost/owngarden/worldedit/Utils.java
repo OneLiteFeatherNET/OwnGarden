@@ -1,12 +1,12 @@
 package fr.skyost.owngarden.worldedit;
 
-import com.google.common.base.Joiner;
 import fr.skyost.owngarden.OwnGarden;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 
+import java.io.File;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.Random;
@@ -18,7 +18,7 @@ public interface Utils {
     /**
      * Accepted WorldEdit versions.
      */
-    String[] FAWE_VERSIONS = {"7.2", "7.3"};
+    String[] FAWE_VERSIONS = {"2.9.1", "2.9.2"};
 
     /**
      * Returns whether the current WorldEdit version should be accepted.
@@ -32,7 +32,9 @@ public interface Utils {
             plugin.log(NamedTextColor.RED, "WorldEdit must be installed on your server !");
             return false;
         }
-        final String version = we.getPluginMeta().getVersion();
+        return true;
+
+        /*final String version = we.getPluginMeta().getVersion();
         for (final String prefix : FAWE_VERSIONS) {
             if (version.startsWith(prefix)) {
                 return true;
@@ -40,7 +42,7 @@ public interface Utils {
         }
         plugin.log(NamedTextColor.RED, "Incorrect WorldEdit version " + version + ". Current accepted ones are : "
             + Joiner.on(", ").join(WorldEditUtils.FAWE_VERSIONS) + ".");
-        return false;
+        return false;*/ // FAWE methods are (probably) stable with versions
     }
 
     /**
@@ -49,7 +51,7 @@ public interface Utils {
      * @return An array containing the invalid schematics.
      */
 
-    String[] testSchematics();
+    File[] testSchematics();
 
     /**
      * Grows a tree at the specified location.
@@ -60,7 +62,7 @@ public interface Utils {
      * @return Whether the operation has been a success.
      */
 
-    boolean growTree(final List<String> schematics, final Location location);
+    boolean growTree(final List<File> schematics, final Location location);
 
 
 }

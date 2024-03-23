@@ -25,13 +25,13 @@ public record OwnGardenCommand(OwnGarden plugin) implements CommandExecutor {
         final String line = "=".repeat(ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH - 2);
         sender.sendMessage("§r" + line);
         sender.sendMessage("§6SCHEMATICS : ");
-        sender.sendMessage("§l- Oak : §r" + Joiner.on(' ').join(plugin.pluginConfig.saplingOakSchematics));
-        sender.sendMessage("§l- Spruce : §r" + Joiner.on(' ').join(plugin.pluginConfig.saplingSpruceSchematics));
-        sender.sendMessage("§l- Jungle : §r" + Joiner.on(' ').join(plugin.pluginConfig.saplingJungleSchematics));
-        sender.sendMessage("§l- Acacia : §r" + Joiner.on(' ').join(plugin.pluginConfig.saplingAcaciaSchematics));
-        sender.sendMessage("§l- Dark Oak : §r" + Joiner.on(' ').join(plugin.pluginConfig.saplingDarkOakSchematics));
-        sender.sendMessage("§l- Brown Mushroom : §r" + Joiner.on(' ').join(plugin.pluginConfig.mushroomBrownSchematics));
-        sender.sendMessage("§l- Red Mushroom : §r" + Joiner.on(' ').join(plugin.pluginConfig.mushroomRedSchematics));
+        sender.sendMessage("§l- Oak : §r" + Joiner.on(' ').join(OwnGarden.saplingOakSchematics));
+        sender.sendMessage("§l- Spruce : §r" + Joiner.on(' ').join(OwnGarden.saplingSpruceSchematics));
+        sender.sendMessage("§l- Jungle : §r" + Joiner.on(' ').join(OwnGarden.saplingJungleSchematics));
+        sender.sendMessage("§l- Acacia : §r" + Joiner.on(' ').join(OwnGarden.saplingAcaciaSchematics));
+        sender.sendMessage("§l- Dark Oak : §r" + Joiner.on(' ').join(OwnGarden.saplingDarkOakSchematics));
+        sender.sendMessage("§l- Brown Mushroom : §r" + Joiner.on(' ').join(OwnGarden.mushroomBrownSchematics));
+        sender.sendMessage("§l- Red Mushroom : §r" + Joiner.on(' ').join(OwnGarden.mushroomRedSchematics));
         sender.sendMessage("§r" + line);
         sender.sendMessage("§6PERMISSIONS : ");
         for (final Permission permission : description.getPermissions()) {

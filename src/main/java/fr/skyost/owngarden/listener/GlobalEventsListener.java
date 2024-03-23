@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.StructureGrowEvent;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -28,7 +29,7 @@ public record GlobalEventsListener(OwnGarden plugin) implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onStructureGrow(final StructureGrowEvent event) {
         final Location location = event.getLocation();
-        final List<String> schematics = plugin.pluginConfig.getSchematics(location.getBlock().getType());
+        final List<File> schematics = OwnGarden.getSchematics(location.getBlock().getType());
         if (plugin.operations.growTree(schematics, location)) {
             /*if (schematics == plugin.pluginConfig.saplingDarkOakSchematics) {
                 val current = location.block
