@@ -6,6 +6,7 @@ plugins {
 }
 
 group = "fr.skyost"
+val grp = group
 version = "1.0.0"
 
 repositories {
@@ -18,18 +19,22 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
-    implementation("org.bstats:bstats-bukkit-lite:1.5")
+//    implementation("org.bstats:bstats-bukkit-lite:1.5")
     implementation("org.zeroturnaround:zt-zip:1.14")
     implementation("com.eclipsesource.minimal-json:minimal-json:0.9.5")
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit")
-    implementation(platform("com.intellectualsites.bom:bom-newest:1.42")) // Ref: https://github.com/IntellectualSites/bom
-//    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.0")
+    implementation(platform("com.intellectualsites.bom:bom-newest:1.42"))
 }
 
 tasks {
     shadowJar {
+        archiveClassifier = ""
+        archiveVersion = ""
         mergeServiceFiles()
-        relocate("org.bstats.bukkit", "fr.skyost.owngarden.util.bstats")
+        dependencies {
+            include(dependency("org.zeroturnaround::"))
+            relocate("org.zeroturnaround.zip", "$grp.zip")
+        }
     }
     runServer {
         // Configure the Minecraft version for our task.

@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.zeroturnaround.zip.ZipUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -72,17 +73,6 @@ public class OwnGarden extends JavaPlugin {
         log(NamedTextColor.GOLD, "Testing schematics...");
         loadSchematics();
 
-        /* EXTRACTING DEFAULT SCHEMATICS IF NEEDED : */
-        /*final File shematicsDirectory = new File(pluginConfig.schematicsDirectory);
-        if (!shematicsDirectory.exists() || !shematicsDirectory.isDirectory()) {
-            shematicsDirectory.mkdirs();
-        }
-        if (shematicsDirectory.list().length != 0) {
-            log(NamedTextColor.GOLD, "Extracting samples schematics...");
-            extractSamples(shematicsDirectory);
-            log(NamedTextColor.GOLD, "Done !");
-        }*/
-
         /* TESTING SCHEMATICS : */
         final File[] invalidSchematics = operations.testSchematics();
         if (invalidSchematics.length != 0) {
@@ -112,17 +102,17 @@ public class OwnGarden extends JavaPlugin {
             + " by " + Joiner.on(' ').join(getPluginMeta().getAuthors()) + "!");
     }
 
-    /*
+    /**
      * Extracts the samples to the specified directory.
      *
      * @param schematicsDirectory The schematics directory.
      */
-    /*private void extractSamples(final File schematicsDirectory) {
+    private void extractSamples(final File schematicsDirectory) {
         ZipUtil.unpack(getFile(), schematicsDirectory, name -> {
             return name.startsWith("schematics/") && name.length() > "schematics/".length()
                 ? name.substring("schematics/".length()) : null;
         });
-    }*/
+    }
 
     /**
      * Logs a message to the console.
@@ -162,9 +152,16 @@ public class OwnGarden extends JavaPlugin {
      */
 
     public void loadSchematics() {
-        final File root = new File(getDataFolder().getAbsolutePath() + "/schematics");
+        final File root = new File(pluginConfig.schematicsDirectory);
         if (!root.isDirectory()) {
             root.mkdirs();
+        }
+
+        /* EXTRACTING DEFAULT SCHEMATICS IF NEEDED : */
+        if (root.list().length == 0) {
+            log(NamedTextColor.GOLD, "Extracting samples schematics...");
+            extractSamples(root);
+            log(NamedTextColor.GOLD, "Done !");
         }
 
         File dir = new File(root.getAbsolutePath() + File.separator + pluginConfig.saplingOakDir);
