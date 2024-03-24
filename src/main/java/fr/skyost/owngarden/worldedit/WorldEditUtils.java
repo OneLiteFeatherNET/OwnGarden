@@ -16,6 +16,7 @@ import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.io.Closer;
 import fr.skyost.owngarden.OwnGarden;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -87,7 +88,7 @@ public record WorldEditUtils(OwnGarden plugin) implements Utils {
 
     private ClipboardHolder loadSchematic(final File file) throws IOException {
         if (!file.exists()) {
-            plugin.log(NamedTextColor.RED, "Schematic not found : " + file.getName());
+            plugin.logger.info(Component.text("Schematic not found : " + file.getName(), NamedTextColor.RED));
         }
         final ClipboardFormat format = ClipboardFormats.findByFile(file);
         if (format == null) throw new IllegalArgumentException("Unknown schematic format.");
@@ -148,7 +149,7 @@ public record WorldEditUtils(OwnGarden plugin) implements Utils {
 
             return true;
         } catch (IOException | MaxChangedBlocksException ex) {
-            plugin.log(NamedTextColor.RED, "Unable to load the schematic : " + file.getName() + ".");
+            plugin.logger.info(Component.text("Unable to load the schematic : " + file.getName(), NamedTextColor.RED));
             ex.printStackTrace();
         }
         return false;

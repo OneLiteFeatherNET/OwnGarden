@@ -3,6 +3,7 @@ package fr.skyost.owngarden.command;
 import com.google.common.base.Joiner;
 import fr.skyost.owngarden.OwnGarden;
 import io.papermc.paper.plugin.configuration.PluginMeta;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,7 +17,7 @@ import org.bukkit.util.ChatPaginator;
 public record OwnGardenCommand(OwnGarden plugin) implements CommandExecutor {
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
         if (!sender.hasPermission("owngarden.command")) {
-            plugin.log(NamedTextColor.RED, "You do not have the permission to execute this command.");
+            plugin.logger.info(Component.text("You do not have the permission to execute this command.", NamedTextColor.RED));
             return true;
         }
         final PluginMeta description = plugin.getPluginMeta();

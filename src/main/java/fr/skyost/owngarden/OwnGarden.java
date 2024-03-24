@@ -39,7 +39,7 @@ public class OwnGarden extends JavaPlugin {
 
     public static final HashMap<String, List<File>> treeTypes = new HashMap<>();
 
-    private final ComponentLogger logger = ComponentLogger.logger(getName());
+    public final ComponentLogger logger = ComponentLogger.logger(getName());
 
     @Override
     public void onEnable() {
@@ -49,7 +49,7 @@ public class OwnGarden extends JavaPlugin {
         } else operations = new DefaultUtils();
 
         /* CONFIGURATION : */
-        log(NamedTextColor.GOLD, "Loading the configuration...");
+        logger.info(Component.text("Loading the configuration...", NamedTextColor.GOLD));
 
         this.pluginConfig = new PluginConfig(getDataFolder());
         try {
@@ -63,23 +63,24 @@ public class OwnGarden extends JavaPlugin {
         } catch (InvalidConfigurationException e) {
             throw new RuntimeException(e);
         }
-        log(NamedTextColor.GOLD, "Configuration loaded !");
-        log(NamedTextColor.GOLD, "Testing schematics...");
+
+        logger.info(Component.text("Configuration loaded !", NamedTextColor.GOLD));
+        logger.info(Component.text("Testing schematics...", NamedTextColor.GOLD));
         loadSchematics();
 
         /* TESTING SCHEMATICS : */
         final File[] invalidSchematics = operations.testSchematics();
         if (invalidSchematics.length != 0) {
-            log(NamedTextColor.RED, "There are some invalid schematics :");
+            logger.info(Component.text("There are some invalid schematics :", NamedTextColor.RED));
             for (final File invalidSchematic : invalidSchematics) {
-                log(NamedTextColor.RED, invalidSchematic.getName());
+                logger.info(Component.text(invalidSchematic.getName(), NamedTextColor.RED));
                 for (final List<File> treeList : treeTypes.values()) {
                     treeList.remove(invalidSchematic);
                 }
             }
-            log(NamedTextColor.RED, "They are not going to be used by the plugin. Please fix them and restart your server.");
+            logger.info(Component.text("They will not be used. Please fix them and restart your server.", NamedTextColor.RED));
         } else {
-            log(NamedTextColor.GOLD, "Done, no error.");
+            logger.info(Component.text("Done, no error.", NamedTextColor.GOLD));
         }
 
         /* REGISTERING EVENTS : */
@@ -87,8 +88,8 @@ public class OwnGarden extends JavaPlugin {
 
         /* REGISTERING COMMANDS : */
         getCommand("owngarden").setExecutor(new OwnGardenCommand(this));
-        log(null, "Enabled " + getName() + " v" + getPluginMeta().getVersion()
-            + " by " + Joiner.on(' ').join(getPluginMeta().getAuthors()) + "!");
+        logger.info(Component.text("Enabled " + getName() + " v" + getPluginMeta().getVersion()
+            + " by " + Joiner.on(' ').join(getPluginMeta().getAuthors()) + "!"));
     }
 
     /**
@@ -101,17 +102,6 @@ public class OwnGarden extends JavaPlugin {
             return name.startsWith("schematics/") && name.length() > "schematics/".length()
                 ? name.substring("schematics/".length()) : null;
         });
-    }
-
-    /**
-     * Logs a message to the console.
-     *
-     * @param color The color (after the [plugin-name]).
-     * @param message The message.
-     */
-    public void log(final NamedTextColor color, final String message) {
-        logger.info(Component.text(message, color));
-//        Bukkit.getConsoleSender().sendMessage(Component.text("[" + getName() + "]").append(Component.text(message, color)));
     }
 
     /**
@@ -152,9 +142,9 @@ public class OwnGarden extends JavaPlugin {
 
         /* EXTRACTING DEFAULT SCHEMATICS IF NEEDED : */
         if (root.list().length == 0) {
-            log(NamedTextColor.GOLD, "Extracting samples schematics...");
+            logger.info(Component.text("Extracting samples schematics...", NamedTextColor.GOLD));
             extractSamples(root);
-            log(NamedTextColor.GOLD, "Done !");
+            logger.info(Component.text("Done !", NamedTextColor.GOLD));
         }
 
         for (final Map.Entry<String, List<File>> en : treeTypes.entrySet()) {

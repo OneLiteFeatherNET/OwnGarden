@@ -1,6 +1,7 @@
 package fr.skyost.owngarden.worldedit;
 
 import fr.skyost.owngarden.OwnGarden;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -29,7 +30,7 @@ public interface Utils {
     static boolean checkWorldEditVersion(final OwnGarden plugin) {
         final Plugin we = Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
         if (we == null) {
-            plugin.log(NamedTextColor.RED, "WorldEdit must be installed on your server !");
+            plugin.logger.info(Component.text("FAWE must be installed on your server !", NamedTextColor.RED));
             return false;
         }
         return true;
