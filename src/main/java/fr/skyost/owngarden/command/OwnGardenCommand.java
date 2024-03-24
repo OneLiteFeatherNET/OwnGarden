@@ -25,13 +25,18 @@ public record OwnGardenCommand(OwnGarden plugin) implements CommandExecutor {
         final String line = "=".repeat(ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH - 2);
         sender.sendMessage("§r" + line);
         sender.sendMessage("§6SCHEMATICS : ");
-        sender.sendMessage("§l- Oak : §r" + Joiner.on(' ').join(OwnGarden.saplingOakSchematics));
-        sender.sendMessage("§l- Spruce : §r" + Joiner.on(' ').join(OwnGarden.saplingSpruceSchematics));
-        sender.sendMessage("§l- Jungle : §r" + Joiner.on(' ').join(OwnGarden.saplingJungleSchematics));
-        sender.sendMessage("§l- Acacia : §r" + Joiner.on(' ').join(OwnGarden.saplingAcaciaSchematics));
-        sender.sendMessage("§l- Dark Oak : §r" + Joiner.on(' ').join(OwnGarden.saplingDarkOakSchematics));
-        sender.sendMessage("§l- Brown Mushroom : §r" + Joiner.on(' ').join(OwnGarden.mushroomBrownSchematics));
-        sender.sendMessage("§l- Red Mushroom : §r" + Joiner.on(' ').join(OwnGarden.mushroomRedSchematics));
+        sender.sendMessage("§l- Oak : §r" + Joiner.on(' ').join(OwnGarden.treeTypes.get(plugin.pluginConfig.saplingOakDir)));
+        sender.sendMessage("§l- Spruce : §r" + Joiner.on(' ').join(OwnGarden.treeTypes.get(plugin.pluginConfig.saplingSpruceDir)));
+        sender.sendMessage("§l- Birch : §r" + Joiner.on(' ').join(OwnGarden.treeTypes.get(plugin.pluginConfig.saplingBirchDir)));
+        sender.sendMessage("§l- Jungle : §r" + Joiner.on(' ').join(OwnGarden.treeTypes.get(plugin.pluginConfig.saplingJungleDir)));
+        sender.sendMessage("§l- Acacia : §r" + Joiner.on(' ').join(OwnGarden.treeTypes.get(plugin.pluginConfig.saplingAcaciaDir)));
+        sender.sendMessage("§l- Dark Oak : §r" + Joiner.on(' ').join(OwnGarden.treeTypes.get(plugin.pluginConfig.saplingDarkOakDir)));
+        sender.sendMessage("§l- Cherry : §r" + Joiner.on(' ').join(OwnGarden.treeTypes.get(plugin.pluginConfig.saplingCherryDir)));
+        sender.sendMessage("§l- Azalea : §r" + Joiner.on(' ').join(OwnGarden.treeTypes.get(plugin.pluginConfig.saplingAzaleaDir)));
+        sender.sendMessage("§l- Brown Mushroom : §r" + Joiner.on(' ').join(OwnGarden.treeTypes.get(plugin.pluginConfig.mushroomBrownDir)));
+        sender.sendMessage("§l- Red Mushroom : §r" + Joiner.on(' ').join(OwnGarden.treeTypes.get(plugin.pluginConfig.mushroomRedDir)));
+        sender.sendMessage("§l- Crimson Mushroom : §r" + Joiner.on(' ').join(OwnGarden.treeTypes.get(plugin.pluginConfig.mushroomCrimsonDir)));
+        sender.sendMessage("§l- Warped Mushroom : §r" + Joiner.on(' ').join(OwnGarden.treeTypes.get(plugin.pluginConfig.mushroomWarpedDir)));
         sender.sendMessage("§r" + line);
         sender.sendMessage("§6PERMISSIONS : ");
         for (final Permission permission : description.getPermissions()) {

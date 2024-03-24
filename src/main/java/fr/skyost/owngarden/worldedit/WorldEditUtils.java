@@ -16,7 +16,6 @@ import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.io.Closer;
 import fr.skyost.owngarden.OwnGarden;
-import fr.skyost.owngarden.config.PluginConfig;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -41,16 +40,10 @@ public record WorldEditUtils(OwnGarden plugin) implements Utils {
      * @return An array containing the invalid schematics.
      */
     public File[] testSchematics() {
-        final PluginConfig config = plugin.pluginConfig;
         final ArrayList<File> schematics = new ArrayList<>();
-        schematics.addAll(OwnGarden.saplingOakSchematics);
-        schematics.addAll(OwnGarden.saplingSpruceSchematics);
-        schematics.addAll(OwnGarden.saplingBirchSchematics);
-        schematics.addAll(OwnGarden.saplingJungleSchematics);
-        schematics.addAll(OwnGarden.saplingAcaciaSchematics);
-        schematics.addAll(OwnGarden.saplingDarkOakSchematics);
-        schematics.addAll(OwnGarden.mushroomBrownSchematics);
-        schematics.addAll(OwnGarden.mushroomRedSchematics);
+        for (final List<File> list : OwnGarden.treeTypes.values()) {
+            schematics.addAll(list);
+        }
         final boolean removeWorldEditMetaData = plugin.pluginConfig.schematicsRemoveWorldEditMetaData;
         final ArrayList<File> invalidSchematics = new ArrayList<>();
         for (final File schematic : schematics) {

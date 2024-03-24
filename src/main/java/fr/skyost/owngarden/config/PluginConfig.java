@@ -1,8 +1,10 @@
 package fr.skyost.owngarden.config;
 
+import fr.skyost.owngarden.OwnGarden;
 import fr.skyost.owngarden.util.Skyoconfig;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 
 /**
@@ -29,22 +31,19 @@ public class PluginConfig extends Skyoconfig {
 	@ConfigOptions(name = "schematics.remove-worldedit-metadata")
 	public boolean schematicsRemoveWorldEditMetaData = true;
 
-	public String saplingOakDir = "oak";
 //	@ConfigOptions(name = "sapling.oak")
-
-	public String saplingSpruceDir = "spruce";
-
+	public String saplingOakDir = "oak";
 	public String saplingBirchDir = "birch";
-
 	public String saplingJungleDir = "jungle";
-
 	public String saplingAcaciaDir = "acacia";
-
+	public String saplingSpruceDir = "spruce";
 	public String saplingDarkOakDir = "dark_oak";
-
+	public String saplingCherryDir = "cherry";
+	public String saplingAzaleaDir = "azalea";
 	public String mushroomBrownDir = "brown_mushroom";
-
 	public String mushroomRedDir = "red_mushroom";
+	public String mushroomCrimsonDir = "crimson_mushroom";
+	public String mushroomWarpedDir = "warped_mushroom";
 
 	/**
 	 * Creates a new plugin config instance.
@@ -56,5 +55,18 @@ public class PluginConfig extends Skyoconfig {
 		super(new File(dataFolder, "config.yml"), Collections.singletonList("OwnGarden Configuration File"));
 
 		schematicsDirectory = new File(dataFolder, "schematics/").getPath();
+
+		OwnGarden.treeTypes.put(saplingOakDir, new ArrayList<>());
+		OwnGarden.treeTypes.put(saplingBirchDir, new ArrayList<>());
+		OwnGarden.treeTypes.put(saplingJungleDir, new ArrayList<>());
+		OwnGarden.treeTypes.put(saplingAcaciaDir, new ArrayList<>());
+		OwnGarden.treeTypes.put(saplingSpruceDir, new ArrayList<>());
+		OwnGarden.treeTypes.put(saplingDarkOakDir, new ArrayList<>());
+		OwnGarden.treeTypes.put(saplingCherryDir, new ArrayList<>());
+		OwnGarden.treeTypes.put(saplingAzaleaDir, new ArrayList<>());
+		OwnGarden.treeTypes.put(mushroomBrownDir, new ArrayList<>());
+		OwnGarden.treeTypes.put(mushroomRedDir, new ArrayList<>());
+		OwnGarden.treeTypes.put(mushroomCrimsonDir, new ArrayList<>());
+		OwnGarden.treeTypes.put(mushroomWarpedDir, new ArrayList<>());
 	}
 }

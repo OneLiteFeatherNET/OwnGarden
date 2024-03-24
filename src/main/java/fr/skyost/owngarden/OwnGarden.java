@@ -17,9 +17,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.zeroturnaround.zip.ZipUtil;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The OwnGarden plugin class.
@@ -36,14 +37,7 @@ public class OwnGarden extends JavaPlugin {
      */
     public Utils operations = null;
 
-    public static final List<File> saplingOakSchematics = new ArrayList<>();
-    public static final List<File> saplingSpruceSchematics = new ArrayList<>();
-    public static final List<File> saplingBirchSchematics = new ArrayList<>();
-    public static final List<File> saplingJungleSchematics = new ArrayList<>();
-    public static final List<File> saplingAcaciaSchematics = new ArrayList<>();
-    public static final List<File> saplingDarkOakSchematics = new ArrayList<>();
-    public static final List<File> mushroomRedSchematics = new ArrayList<>();
-    public static final List<File> mushroomBrownSchematics = new ArrayList<>();
+    public static final HashMap<String, List<File>> treeTypes = new HashMap<>();
 
     private final ComponentLogger logger = ComponentLogger.logger(getName());
 
@@ -79,14 +73,9 @@ public class OwnGarden extends JavaPlugin {
             log(NamedTextColor.RED, "There are some invalid schematics :");
             for (final File invalidSchematic : invalidSchematics) {
                 log(NamedTextColor.RED, invalidSchematic.getName());
-                saplingOakSchematics.remove(invalidSchematic);
-                saplingSpruceSchematics.remove(invalidSchematic);
-                saplingBirchSchematics.remove(invalidSchematic);
-                saplingJungleSchematics.remove(invalidSchematic);
-                saplingAcaciaSchematics.remove(invalidSchematic);
-                saplingDarkOakSchematics.remove(invalidSchematic);
-                mushroomBrownSchematics.remove(invalidSchematic);
-                mushroomRedSchematics.remove(invalidSchematic);
+                for (final List<File> treeList : treeTypes.values()) {
+                    treeList.remove(invalidSchematic);
+                }
             }
             log(NamedTextColor.RED, "They are not going to be used by the plugin. Please fix them and restart your server.");
         } else {
@@ -133,16 +122,20 @@ public class OwnGarden extends JavaPlugin {
      * @return The corresponding list.
      */
 
-    public static List<File> getSchematics(final Material material) {
+    public List<File> getSchematics(final Material material) {
         return switch (material) { // Oak
-            case OAK_SAPLING, OAK_LOG -> saplingOakSchematics; // Spruce
-            case SPRUCE_SAPLING, SPRUCE_LOG -> saplingSpruceSchematics; // Birch
-            case BIRCH_SAPLING, BIRCH_LOG -> saplingBirchSchematics; // Jungle
-            case JUNGLE_SAPLING, JUNGLE_LOG -> saplingJungleSchematics; // Acacia
-            case ACACIA_SAPLING, ACACIA_LOG -> saplingAcaciaSchematics; // Dark Oak
-            case DARK_OAK_SAPLING, DARK_OAK_LOG -> saplingDarkOakSchematics; // Red mushroom
-            case RED_MUSHROOM, MUSHROOM_STEM -> mushroomRedSchematics; // Red mushroom
-            case BROWN_MUSHROOM -> mushroomBrownSchematics; // Brown mushroom
+            case OAK_SAPLING, OAK_LOG -> treeTypes.get(pluginConfig.saplingOakDir); // Oak
+            case SPRUCE_SAPLING, SPRUCE_LOG -> treeTypes.get(pluginConfig.saplingSpruceDir); // Spruce
+            case BIRCH_SAPLING, BIRCH_LOG -> treeTypes.get(pluginConfig.saplingBirchDir); // Birch
+            case JUNGLE_SAPLING, JUNGLE_LOG -> treeTypes.get(pluginConfig.saplingJungleDir); // Jungle
+            case ACACIA_SAPLING, ACACIA_LOG -> treeTypes.get(pluginConfig.saplingAcaciaDir); // Acacia
+            case DARK_OAK_SAPLING, DARK_OAK_LOG -> treeTypes.get(pluginConfig.saplingDarkOakDir); // Dark Oak
+            case CHERRY_SAPLING, CHERRY_LOG -> treeTypes.get(pluginConfig.saplingCherryDir); // Cherry Blossom
+            case AZALEA, FLOWERING_AZALEA -> treeTypes.get(pluginConfig.saplingAzaleaDir); // Azalea Wood
+            case RED_MUSHROOM, MUSHROOM_STEM -> treeTypes.get(pluginConfig.mushroomRedDir); // Red mushroom
+            case BROWN_MUSHROOM -> treeTypes.get(pluginConfig.mushroomBrownDir); // Brown mushroom
+            case CRIMSON_FUNGUS, CRIMSON_STEM -> treeTypes.get(pluginConfig.mushroomCrimsonDir); // Crimson mushroom
+            case WARPED_FUNGUS, WARPED_STEM -> treeTypes.get(pluginConfig.mushroomWarpedDir); // Warped mushroom
             default -> List.of();
         };
     }
@@ -164,36 +157,10 @@ public class OwnGarden extends JavaPlugin {
             log(NamedTextColor.GOLD, "Done !");
         }
 
-        File dir = new File(root.getAbsolutePath() + File.separator + pluginConfig.saplingOakDir);
-        if (!dir.isDirectory()) dir.mkdirs();
-        saplingOakSchematics.addAll(Arrays.asList(dir.listFiles()));
-
-        dir = new File(root.getAbsolutePath() + File.separator + pluginConfig.saplingAcaciaDir);
-        if (!dir.isDirectory()) dir.mkdirs();
-        saplingAcaciaSchematics.addAll(Arrays.asList(dir.listFiles()));
-
-        dir = new File(root.getAbsolutePath() + File.separator + pluginConfig.saplingBirchDir);
-        if (!dir.isDirectory()) dir.mkdirs();
-        saplingBirchSchematics.addAll(Arrays.asList(dir.listFiles()));
-
-        dir = new File(root.getAbsolutePath() + File.separator + pluginConfig.saplingDarkOakDir);
-        if (!dir.isDirectory()) dir.mkdirs();
-        saplingDarkOakSchematics.addAll(Arrays.asList(dir.listFiles()));
-
-        dir = new File(root.getAbsolutePath() + File.separator + pluginConfig.saplingJungleDir);
-        if (!dir.isDirectory()) dir.mkdirs();
-        saplingJungleSchematics.addAll(Arrays.asList(dir.listFiles()));
-
-        dir = new File(root.getAbsolutePath() + File.separator + pluginConfig.saplingSpruceDir);
-        if (!dir.isDirectory()) dir.mkdirs();
-        saplingSpruceSchematics.addAll(Arrays.asList(dir.listFiles()));
-
-        dir = new File(root.getAbsolutePath() + File.separator + pluginConfig.mushroomBrownDir);
-        if (!dir.isDirectory()) dir.mkdirs();
-        mushroomBrownSchematics.addAll(Arrays.asList(dir.listFiles()));
-
-        dir = new File(root.getAbsolutePath() + File.separator + pluginConfig.mushroomRedDir);
-        if (!dir.isDirectory()) dir.mkdirs();
-        mushroomRedSchematics.addAll(Arrays.asList(dir.listFiles()));
+        for (final Map.Entry<String, List<File>> en : treeTypes.entrySet()) {
+            final File dir = new File(root.getAbsolutePath() + File.separator + en.getKey());
+            if (!dir.isDirectory()) dir.mkdirs();
+            en.getValue().addAll(Arrays.asList(dir.listFiles()));
+        }
     }
 }
