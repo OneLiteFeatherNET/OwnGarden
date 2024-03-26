@@ -60,6 +60,7 @@ public class OwnGarden extends JavaPlugin {
         /* CONFIGURATION : */
         logger.info(Component.text("Loading the configuration...", NamedTextColor.GOLD));
 
+
         this.pluginConfig = new PluginConfig(this);
         /*try {
             pluginConfig.load();
