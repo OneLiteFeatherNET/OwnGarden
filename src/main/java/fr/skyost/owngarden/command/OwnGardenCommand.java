@@ -21,6 +21,7 @@ public record OwnGardenCommand(OwnGarden plugin) implements CommandExecutor {
             plugin.logger.info(Component.text("You do not have the permission to execute this command.", NamedTextColor.RED));
             return false;
         }
+
         plugin.loadSchematics();
         plugin.pluginConfig.reloadConfig();
         final PluginMeta description = plugin.getPluginMeta();
