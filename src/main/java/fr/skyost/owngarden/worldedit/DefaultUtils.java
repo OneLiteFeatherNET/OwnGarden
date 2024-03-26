@@ -3,7 +3,6 @@ package fr.skyost.owngarden.worldedit;
 import org.bukkit.Location;
 
 import java.io.File;
-import java.util.List;
 
 public class DefaultUtils implements Utils{
 
@@ -13,7 +12,7 @@ public class DefaultUtils implements Utils{
     }
 
     @Override
-    public boolean growTree(final List<File> schematics, final Location location) {
+    public boolean growTree(final File schematic, final Location location) {
         return false;
     }
 }

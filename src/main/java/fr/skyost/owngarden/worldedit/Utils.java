@@ -8,18 +8,13 @@ import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
-import java.security.SecureRandom;
-import java.util.List;
-import java.util.Random;
 
 public interface Utils {
 
-    Random rnd = new SecureRandom();
-
-    /**
+    /*
      * Accepted WorldEdit versions.
      */
-    String[] FAWE_VERSIONS = {"2.9.1", "2.9.2"};
+//    String[] FAWE_VERSIONS = {"2.9.1", "2.9.2"};
 
     /**
      * Returns whether the current WorldEdit version should be accepted.
@@ -57,13 +52,13 @@ public interface Utils {
     /**
      * Grows a tree at the specified location.
      *
-     * @param schematics The schematics list.
+     * @param schematic The schematic file.
      * @param location The location.
      *
      * @return Whether the operation has been a success.
      */
 
-    boolean growTree(final List<File> schematics, final Location location);
+    boolean growTree(final File schematic, final Location location);
 
 
 }

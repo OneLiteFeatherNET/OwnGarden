@@ -11,7 +11,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.StructureGrowEvent;
 
 import java.io.File;
-import java.util.List;
 
 /**
  * Global events handled by the plugin.
@@ -21,16 +20,11 @@ public record GlobalEventsListener(OwnGarden plugin) implements Listener {
     private static final BlockFace[] FACES = {BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SELF,
         BlockFace.SOUTH_EAST, BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST};
 
-    /**
-     * Returns the plugin instance.
-     *
-     * @return The plugin instance.
-     */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onStructureGrow(final StructureGrowEvent event) {
         final Location location = event.getLocation();
-        final List<File> schematics = plugin.getSchematics(location.getBlock().getType());
-        if (plugin.operations.growTree(schematics, location)) {
+        final File schem = plugin.getSchematic(location.getBlock().getType());
+        if (schem != null && plugin.operations.growTree(schem, location)) {
             /*if (schematics == plugin.pluginConfig.saplingDarkOakSchematics) {
                 val current = location.block
                 for (blockFace in FACES) {
