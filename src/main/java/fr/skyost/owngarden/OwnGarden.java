@@ -10,6 +10,8 @@ import fr.skyost.owngarden.worldedit.WorldEditUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -37,6 +39,10 @@ public class OwnGarden extends JavaPlugin {
      * The WorldEdit operations.
      */
     public Utils operations = null;
+
+    public final MiniMessage mini = MiniMessage.builder()
+        .tags(TagResolver.builder().resolver(TagResolver.standard())
+            .build()).build();
 
     public final Random rnd = new SecureRandom();
 

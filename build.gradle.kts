@@ -19,11 +19,12 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
-//    implementation("org.bstats:bstats-bukkit-lite:1.5")
-    implementation("org.zeroturnaround:zt-zip:1.14")
-    implementation("com.eclipsesource.minimal-json:minimal-json:0.9.5")
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit")
-    implementation(platform("com.intellectualsites.bom:bom-newest:1.42"))
+    compileOnly("com.eclipsesource.minimal-json:minimal-json:0.9.5")
+    compileOnly(platform("com.intellectualsites.bom:bom-newest:1.42"))
+
+    implementation("net.kyori:adventure-text-minimessage:4.16.0")
+    implementation("org.zeroturnaround:zt-zip:1.14")
 }
 
 tasks {
@@ -33,7 +34,9 @@ tasks {
         mergeServiceFiles()
         dependencies {
             include(dependency("org.zeroturnaround::"))
+            include(dependency("net.kyori:adventure-text-minimessage"))
             relocate("org.zeroturnaround.zip", "$grp.zip")
+            relocate("net.kyori.adventure.text.minimessage", "$grp.minimessage")
         }
     }
     runServer {

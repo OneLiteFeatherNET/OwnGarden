@@ -27,29 +27,28 @@ public record OwnGardenCommand(OwnGarden plugin) implements CommandExecutor {
         sender.sendMessage("§a" + description.getName() + " v" + description.getVersion()
             + " §7by §6" + Joiner.on(' ').join(description.getAuthors()));
         final String line = "=".repeat(ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH - 2);
-        sender.sendMessage("§r" + line);
-        sender.sendMessage("§6SCHEMATICS : ");
-        sender.sendMessage("§l- Oak : §r" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.OAK)));
-        sender.sendMessage("§l- Spruce : §r" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.SPRUCE)));
-        sender.sendMessage("§l- Birch : §r" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.BIRCH)));
-        sender.sendMessage("§l- Jungle : §r" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.JUNGLE)));
-        sender.sendMessage("§l- Acacia : §r" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.ACACIA)));
-        sender.sendMessage("§l- Dark Oak : §r" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.DARK_OAK)));
-        sender.sendMessage("§l- Cherry : §r" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.CHERRY)));
-        sender.sendMessage("§l- Azalea : §r" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.AZALEA)));
-        sender.sendMessage("§l- Brown Mushroom : §r" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.BROWN_SHROOM)));
-        sender.sendMessage("§l- Red Mushroom : §r" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.RED_SHROOM)));
-        sender.sendMessage("§l- Crimson Mushroom : §r" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.CRIMSON_FUNGUS)));
-        sender.sendMessage("§l- Warped Mushroom : §r" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.WARPED_FUNGUS)));
-        sender.sendMessage("§r" + line);
-        sender.sendMessage("§6PERMISSIONS : ");
+        sender.sendMessage(plugin.mini.deserialize("<gold>SCHEMATICS : "));
+        sender.sendMessage(plugin.mini.deserialize("<bold><yellow>- Oak : <reset>" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.OAK))));
+        sender.sendMessage(plugin.mini.deserialize("<bold><yellow>- Spruce : <reset>" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.SPRUCE))));
+        sender.sendMessage(plugin.mini.deserialize("<bold><yellow>- Birch : <reset>" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.BIRCH))));
+        sender.sendMessage(plugin.mini.deserialize("<bold><yellow>- Jungle : <reset>" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.JUNGLE))));
+        sender.sendMessage(plugin.mini.deserialize("<bold><yellow>- Acacia : <reset>" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.ACACIA))));
+        sender.sendMessage(plugin.mini.deserialize("<bold><yellow>- Dark Oak : <reset>" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.DARK_OAK))));
+        sender.sendMessage(plugin.mini.deserialize("<bold><yellow>- Cherry : <reset>" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.CHERRY))));
+        sender.sendMessage(plugin.mini.deserialize("<bold><yellow>- Azalea : <reset>" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.AZALEA))));
+        sender.sendMessage(plugin.mini.deserialize("<bold><yellow>- Brown Mushroom : <reset>" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.BROWN_SHROOM))));
+        sender.sendMessage(plugin.mini.deserialize("<bold><yellow>- Red Mushroom : <reset>" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.RED_SHROOM))));
+        sender.sendMessage(plugin.mini.deserialize("<bold><yellow>- Crimson Mushroom : <reset>" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.CRIMSON_FUNGUS))));
+        sender.sendMessage(plugin.mini.deserialize("<bold><yellow>- Warped Mushroom : <reset>" + Joiner.on(' ').join(plugin.pluginConfig.getForType(PluginConfig.DefaultTreeType.WARPED_FUNGUS))));
+        sender.sendMessage(plugin.mini.deserialize("<reset>" + line));
+        sender.sendMessage(plugin.mini.deserialize("<gold>PERMISSIONS : "));
         for (final Permission permission : description.getPermissions()) {
-            sender.sendMessage(sender.hasPermission(permission) ? "§a- You have the permission §l" + permission.getName() + "§r§a."
-                : "§c- You do not have the permission §l" + permission.getName() + "§r§c."
-            );
+            sender.sendMessage(plugin.mini.deserialize(sender.hasPermission(permission) 
+                ? "<green>- You have the permission <bold>" + permission.getName() + "<green>."
+                : "<red>- You do not have the permission <bold>" + permission.getName() + "<red>."));
         }
-        sender.sendMessage("§r" + line);
-        sender.sendMessage("§3§oThe above list is scrollable.");
+        sender.sendMessage(plugin.mini.deserialize("<reset>" + line));
+        sender.sendMessage(plugin.mini.deserialize("<dark_aqua><italic>The above list is scrollable."));
         return true;
     }
 }
