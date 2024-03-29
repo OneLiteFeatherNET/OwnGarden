@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 
-import java.io.File;
+import java.nio.file.Path;
 
 public interface Utils {
 
@@ -24,6 +24,7 @@ public interface Utils {
 
     static boolean checkWorldEditVersion(final OwnGarden plugin) {
         final Plugin we = Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
+
         if (we == null) {
             plugin.logger.info(Component.text("FAWE must be installed on your server !", NamedTextColor.RED));
             return false;
@@ -47,7 +48,7 @@ public interface Utils {
      * @return An array containing the invalid schematics.
      */
 
-    File[] testSchematics();
+    boolean testSchematics();
 
     /**
      * Grows a tree at the specified location.
@@ -58,7 +59,7 @@ public interface Utils {
      * @return Whether the operation has been a success.
      */
 
-    boolean growTree(final File schematic, final Location location);
+    boolean growTree(final Path schematic, final Location location);
 
 
 }

@@ -8,7 +8,6 @@ import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -24,10 +23,12 @@ import org.bukkit.World;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents available WorldEdit operations.
@@ -39,29 +40,24 @@ public record WorldEditUtils(OwnGarden plugin) implements Utils {
      *
      * @return An array containing the invalid schematics.
      */
-    public File[] testSchematics() {
-        final ArrayList<File> schematics = new ArrayList<>();
-        for (final List<File> list : plugin.treeMap.values()) {
-            schematics.addAll(list);
-        }
-//        final boolean removeMetaData = plugin.pluginConfig.removeMetaData;
-        final ArrayList<File> invalidSchematics = new ArrayList<>();
-        for (final File schematic : schematics) {
-            try {
-                loadSchematic(schematic);
-                Bukkit.getConsoleSender().sendMessage("loaded: " + schematic.getCanonicalPath());
-                /*if (!removeMetaData) {
-                    continue;
+    public boolean testSchematics() {
+        boolean pass = false;
+        for (final Map.Entry<Material, List<Path>> en : plugin.treeMap.entrySet()) {
+            final List<Path> list = new ArrayList<>(en.getValue().size());
+            for (final Path end : en.getValue()) {
+                final Path schem = Path.of(plugin.treeFolder().toString() + File.separator + end.toString());
+                try {
+                    loadSchematic(schem);
+                    Bukkit.getConsoleSender().sendMessage("loaded: " + schem.toString());
+                    list.add(schem);
+                } catch (IOException ex) {
+                    plugin.logger.error(Component.text("Couldn't load " + schem.toString(), NamedTextColor.RED));
+                    pass = true;
                 }
-                final ClipboardFormat format = ClipboardFormats.findByFile(schematic);
-                if (format == null) continue;
-                removeWorldEditMetaData(format, schematic);*/
-            } catch (IOException ex) {
-                plugin.logger.info(Component.text(ex.getMessage(), NamedTextColor.RED));
-                invalidSchematics.add(schematic);
             }
+            en.setValue(list);
         }
-        return invalidSchematics.toArray(new File[0]);
+        return pass;
     }
 
     /**
@@ -72,29 +68,26 @@ public record WorldEditUtils(OwnGarden plugin) implements Utils {
      * @return The file.
      */
     private File getFile(final String schematic) {
-        return new File(plugin.pluginConfig.schematicsDirectory, schematic);
+        return new File(plugin.schematicsDirectory, schematic);
     }
 
     /**
      * Loads a schematic.
      *
-     * @param file The schematic file (must be in the schematics directory).
+     * @param path The schematic file (must be in the schematics directory).
      *
      * @return The WorldEdit clipboard holder.
      *
      * @throws IOException If any I/O exception occurs.
      */
 
-    private ClipboardHolder loadSchematic(final File file) throws IOException {
-        if (!file.exists()) {
-            throw new IOException("Schematic not found : " + file.getPath());
+    private ClipboardHolder loadSchematic(final Path path) throws IOException {
+        if (!Files.exists(path)) {
+            throw new IOException("Schematic not found : " + path.toString());
         }
-        final ClipboardFormat format = ClipboardFormats.findByFile(file);
-        if (format == null) throw new IOException("Unknown schematic format.");
-        final FileInputStream fileInputStream = new FileInputStream(file);
-        final BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
-        final ClipboardReader reader = format.getReader(bufferedInputStream);
-        return new ClipboardHolder(reader.read());
+        final ClipboardFormat format = ClipboardFormats.findByFile(new File(path.toUri()));
+        if (format == null) throw new IOException("Unknown schematic format : " + path.toString());
+        return new ClipboardHolder(format.getReader(new BufferedInputStream(Files.newInputStream(path))).read());
     }
 
     /**
@@ -106,11 +99,11 @@ public record WorldEditUtils(OwnGarden plugin) implements Utils {
      * @return Whether the operation has been a success.
      */
 
-    public boolean growTree(final File schematic, final Location location) {
+    public boolean growTree(final Path schematic, final Location location) {
         try {
             location.getBlock().setType(Material.AIR, false);
             final ClipboardHolder holder = loadSchematic(schematic);
-            if (plugin.pluginConfig.randomRotation) {
+            if (plugin.randomRotation) {
                 final int degrees = plugin.rnd.nextInt(4) * 90;
                 if (degrees != 0) {
                     final AffineTransform transform = new AffineTransform();
@@ -120,7 +113,7 @@ public record WorldEditUtils(OwnGarden plugin) implements Utils {
             }
             final Clipboard clip = holder.getClipboards().get(0);
             final BlockVector3 dimensions = clip.getDimensions();
-            if (plugin.pluginConfig.checkHeight && !checkHeight(dimensions, location)) {
+            if (plugin.checkHeight && !checkHeight(dimensions, location)) {
                 return false;
             }
             clip.setOrigin(BlockVector3.at(dimensions.getBlockX() >> 1, 0, dimensions.getBlockZ() >> 1));
@@ -136,7 +129,7 @@ public record WorldEditUtils(OwnGarden plugin) implements Utils {
 
             return true;
         } catch (IOException | MaxChangedBlocksException ex) {
-            plugin.logger.info(Component.text("Unable to load the schematic : " + schematic.getName(), NamedTextColor.RED));
+            plugin.logger.info(Component.text("Unable to load the schematic : " + schematic.toString(), NamedTextColor.RED));
             ex.printStackTrace();
         }
         return false;

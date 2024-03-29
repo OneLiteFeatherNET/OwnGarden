@@ -28,6 +28,16 @@ dependencies {
 }
 
 tasks {
+    register<Zip>("createZip") {
+        from("schematics")
+        archiveFileName.set("schematics.zip")
+        destinationDirectory.set(File("src/main/resources"))
+    }
+
+    processResources {
+        dependsOn("createZip")
+    }
+
     shadowJar {
         archiveClassifier = ""
         archiveVersion = ""

@@ -2,8 +2,9 @@ package fr.skyost.owngarden;
 
 import com.google.common.base.Joiner;
 import fr.skyost.owngarden.command.OwnGardenCommand;
-import fr.skyost.owngarden.config.PluginConfig;
+import fr.skyost.owngarden.data.MaterialSchems;
 import fr.skyost.owngarden.listener.GlobalEventsListener;
+import fr.skyost.owngarden.util.ZipUtils;
 import fr.skyost.owngarden.worldedit.DefaultUtils;
 import fr.skyost.owngarden.worldedit.Utils;
 import fr.skyost.owngarden.worldedit.WorldEditUtils;
@@ -14,41 +15,59 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.zeroturnaround.zip.ZipUtil;
 
-import javax.annotation.Nullable;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.SecureRandom;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Consumer;
 
 /**
  * The OwnGarden plugin class.
  */
 
 public class OwnGarden extends JavaPlugin {
-    /**
+
+    public static final String TREES = "trees";
+
+    public static final MiniMessage mini = MiniMessage.builder()
+        .tags(TagResolver.builder().resolver(TagResolver.standard())
+            .build()).build();
+
+    /*
      * The plugin config.
      */
-    public PluginConfig pluginConfig = null;
+//    public PluginConfig pluginConfig = null;
+    public boolean checkHeight;
+    public boolean randomRotation;
+
+    public String schematicsDirectory = TREES;
 
     /**
      * The WorldEdit operations.
      */
     public Utils operations = null;
 
-    public final MiniMessage mini = MiniMessage.builder()
-        .tags(TagResolver.builder().resolver(TagResolver.standard())
-            .build()).build();
-
     public final Random rnd = new SecureRandom();
 
-    public final Map<Material, List<File>> treeMap = new EnumMap<>(Material.class);
+    public final Map<Material, List<Path>> treeMap = new EnumMap<>(Material.class);
 
     public final ComponentLogger logger = ComponentLogger.logger(getName());
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        ConfigurationSerialization.registerClass(MaterialSchems.class);
+        saveDefaultConfig();
+    }
 
     @Override
     public void onEnable() {
@@ -60,22 +79,11 @@ public class OwnGarden extends JavaPlugin {
         /* CONFIGURATION : */
         logger.info(Component.text("Loading the configuration...", NamedTextColor.GOLD));
 
-
-        this.pluginConfig = new PluginConfig(this);
-        /*try {
-            pluginConfig.load();
-            *//*if (pluginConfig.enableUpdater) {
-                new Skyupdater(this, 103296, getFile(), true, true);
-            }*//* // off for now, no updates D:
-            *//*if (pluginConfig.enableMetrics) {
-                new MetricsLite(this);
-            }*//*
-        } catch (InvalidConfigurationException e) {
-            throw new IllegalArgumentException(e);
-        }*/
+        loadConfigs();
 
         logger.info(Component.text("Configuration loaded !", NamedTextColor.GOLD));
         logger.info(Component.text("Testing schematics...", NamedTextColor.GOLD));
+
         loadSchematics();
 
         /* REGISTERING EVENTS : */
@@ -88,28 +96,44 @@ public class OwnGarden extends JavaPlugin {
     }
 
     /**
-     * Extracts the samples to the specified directory.
+     * Returns the schematics list which corresponds to the specified material (sapling / log).
      *
-     * @param schematicsDirectory The schematics directory.
+     * @return Folder with tree schematics.
      */
-    private void extractSamples(final File schematicsDirectory) {
-        ZipUtil.unpack(getFile(), schematicsDirectory, name ->
-            name.startsWith("schematics/") && name.length() > "schematics/".length()
-            ? name.substring("schematics/".length()) : null);
+
+    public Path treeFolder() {
+        return Path.of(getDataFolder() + File.separator + schematicsDirectory);
     }
 
     /**
      * Returns the schematics list which corresponds to the specified material (sapling / log).
      *
-     * @param material The material.
-     *
-     * @return The corresponding list.
+     * @param mat The sapling material.
+     * @param match Consumer of the schmatic path.
      */
 
-    public @Nullable File getSchematic(final Material material) {
-        final List<File> files = treeMap.get(material);
-        return files == null || files.isEmpty() ? null
-            : files.get(rnd.nextInt(files.size()));
+    public void ifMatMatch(final Material mat, final Consumer<Path> match) {
+        final List<Path> files = treeMap.get(mat);
+        if (files == null || files.isEmpty()) return;
+        match.accept(files.get(rnd.nextInt(files.size())));
+    }
+
+    /**
+     * Loads the main config. Fills the tree material map
+     */
+
+    public void loadConfigs() {
+        reloadConfig();
+        treeMap.clear();
+        final FileConfiguration config = getConfig();
+        checkHeight = config.getBoolean("checkHeight", false);
+        randomRotation = config.getBoolean("randomRotation", true);
+        schematicsDirectory = config.getString("schematicsDirectory", TREES);
+
+        @SuppressWarnings("unchecked")
+        final List<MaterialSchems> list = config.getObject(TREES, List.class, List.of());
+        list.forEach(ms -> treeMap.put(ms.material(), ms.schematics()));
+//        logger.info(Component.text(treeMap.toString()));
     }
 
     /**
@@ -117,31 +141,24 @@ public class OwnGarden extends JavaPlugin {
      */
 
     public void loadSchematics() {
-        final File root = new File(getDataFolder()
-            + File.separator + pluginConfig.schematicsDirectory);
-        if (!root.isDirectory()) {
-            root.mkdirs();
-            for (final PluginConfig.DefaultTreeType type : PluginConfig.DefaultTreeType.values()) {
-                new File(root.getAbsolutePath() + File.separator + type.name().toLowerCase()).mkdir();
+        final Path root = treeFolder();
+        if (Files.notExists(root)) {
+            try {
+                Files.createDirectories(root);
+            } catch (IOException e) {
+                logger.error(Component.text("Could not create dir...", NamedTextColor.RED), e);
             }
 
             /* EXTRACTING DEFAULT SCHEMATICS IF NEEDED : */
             logger.info(Component.text("Extracting default schematics...", NamedTextColor.GOLD));
-            extractSamples(root);
+            ZipUtils.extractZip(getResource("schematics.zip"), Path.of(getDataFolder() + File.separator + schematicsDirectory));
             logger.info(Component.text("Done !", NamedTextColor.GOLD));
-            pluginConfig.reloadConfig();
+            loadConfigs();
         }
 
         /* TESTING SCHEMATICS : */
-        final File[] invalidSchematics = operations.testSchematics();
-        if (invalidSchematics.length != 0) {
-            logger.info(Component.text("There are some invalid schematics.", NamedTextColor.RED));
-            for (final File invalidSchematic : invalidSchematics) {
-                for (final List<File> treeList : treeMap.values()) {
-                    treeList.remove(invalidSchematic);
-                }
-            }
-            logger.info(Component.text("They will not be used. Please fix them and restart your server.", NamedTextColor.RED));
+        if (operations.testSchematics()) {
+            logger.info(Component.text("There are some invalid schematics.\nPlease fix them and restart your server.", NamedTextColor.RED));
         } else {
             logger.info(Component.text("Done, no error.", NamedTextColor.GOLD));
         }

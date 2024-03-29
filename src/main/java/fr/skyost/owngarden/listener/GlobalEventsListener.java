@@ -10,8 +10,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.StructureGrowEvent;
 
-import java.io.File;
-
 /**
  * Global events handled by the plugin.
  */
@@ -23,28 +21,18 @@ public record GlobalEventsListener(OwnGarden plugin) implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onStructureGrow(final StructureGrowEvent event) {
         final Location location = event.getLocation();
-        final File schem = plugin.getSchematic(location.getBlock().getType());
-        if (schem != null && plugin.operations.growTree(schem, location)) {
-            /*if (schematics == plugin.pluginConfig.saplingDarkOakSchematics) {
-                val current = location.block
-                for (blockFace in FACES) {
-                    val relative = current.getRelative(blockFace)
-                    if (relative.type == Material.DARK_OAK_SAPLING) {
-                        relative.type = Material.AIR;
-                    }
-                }
-            }*/ // spruce trees can do that too
+        plugin.ifMatMatch(location.getBlock().getType(), schem -> {
             final Block current = location.getBlock();
             final Material type = current.getType();
-            for (final BlockFace blockFace : FACES) {
-                final Block relative = current.getRelative(blockFace);
-                if (relative.getType() == type) {
-                    relative.setType(Material.AIR, false);
+            if (plugin.operations.growTree(schem, location)) {
+                event.setCancelled(true);
+                for (final BlockFace blockFace : FACES) {
+                    final Block relative = current.getRelative(blockFace);
+                    if (relative.getType() == type) {
+                        relative.setType(Material.AIR, false);
+                    }
                 }
             }
-
-            //event.getBlocks().clear();
-            event.setCancelled(true);
-        }
+        });
     }
 }

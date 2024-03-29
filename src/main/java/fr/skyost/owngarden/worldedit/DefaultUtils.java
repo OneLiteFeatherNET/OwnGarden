@@ -2,17 +2,17 @@ package fr.skyost.owngarden.worldedit;
 
 import org.bukkit.Location;
 
-import java.io.File;
+import java.nio.file.Path;
 
 public class DefaultUtils implements Utils{
 
     @Override
-    public File[] testSchematics() {
-        return new File[0];
+    public boolean testSchematics() {
+        return false;
     }
 
     @Override
-    public boolean growTree(final File schematic, final Location location) {
+    public boolean growTree(final Path schematic, final Location location) {
         return false;
     }
 }
