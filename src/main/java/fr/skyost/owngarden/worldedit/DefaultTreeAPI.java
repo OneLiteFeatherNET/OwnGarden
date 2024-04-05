@@ -4,7 +4,7 @@ import org.bukkit.Location;
 
 import java.nio.file.Path;
 
-public class DefaultUtils implements Utils{
+public class DefaultTreeAPI implements TreeAPI {
 
     @Override
     public boolean testSchematics() {
@@ -12,7 +12,7 @@ public class DefaultUtils implements Utils{
     }
 
     @Override
-    public boolean growTree(final Path schematic, final Location location) {
-        return false;
+    public GrowState growTree(final Path schematic, final Location location) {
+        return GrowState.UNKNOWN;
     }
 }
