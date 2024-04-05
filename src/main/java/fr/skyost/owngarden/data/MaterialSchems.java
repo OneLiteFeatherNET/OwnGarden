@@ -23,11 +23,6 @@ public record MaterialSchems(Material material, List<Path> schematics) implement
         return serials;
     }
 
-    /*public Optional<File> randSchem() {
-        if (schematics.isEmpty()) return Optional.empty();
-        return Optional.of(new File(schematics.get(OwnGarden.rnd.nextInt(schematics.size()))));
-    }*/
-
     @SuppressWarnings("unchecked")
     public static MaterialSchems deserialize(Map<String, Object> args) {
         return new MaterialSchems(Material.matchMaterial((String) args.get(MAT)),
