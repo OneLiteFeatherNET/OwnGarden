@@ -1,6 +1,7 @@
 package fr.skyost.owngarden.listener;
 
 import fr.skyost.owngarden.OwnGarden;
+import fr.skyost.owngarden.worldedit.TreeAPI;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -21,10 +22,10 @@ public record GlobalEventsListener(OwnGarden plugin) implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onStructureGrow(final StructureGrowEvent event) {
         final Location location = event.getLocation();
-        plugin.ifMatMatch(location.getBlock().getType(), schem -> {
+        plugin.getTreeService().ifMatMatch(location.getBlock().getType(), schem -> {
             final Block current = location.getBlock();
             final Material type = current.getType();
-            if (plugin.operations.growTree(schem, location)) {
+            if (plugin.getOperations().growTree(schem, location) == TreeAPI.GrowState.SUCCESS) {
                 event.setCancelled(true);
                 for (final BlockFace blockFace : FACES) {
                     final Block relative = current.getRelative(blockFace);
