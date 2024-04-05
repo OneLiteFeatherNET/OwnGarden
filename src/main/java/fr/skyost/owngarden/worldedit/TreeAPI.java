@@ -3,13 +3,14 @@ package fr.skyost.owngarden.worldedit;
 import fr.skyost.owngarden.OwnGarden;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 
 import java.nio.file.Path;
 
-public interface Utils {
+public interface TreeAPI {
 
     /*
      * Accepted WorldEdit versions.
@@ -26,20 +27,11 @@ public interface Utils {
         final Plugin we = Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
 
         if (we == null) {
-            plugin.logger.info(Component.text("FAWE must be installed on your server !", NamedTextColor.RED));
+            ComponentLogger.logger(TreeAPI.class.getSimpleName())
+                .info(Component.text("FAWE must be installed on your server !", NamedTextColor.RED));
             return false;
         }
         return true;
-
-        /*final String version = we.getPluginMeta().getVersion();
-        for (final String prefix : FAWE_VERSIONS) {
-            if (version.startsWith(prefix)) {
-                return true;
-            }
-        }
-        plugin.log(NamedTextColor.RED, "Incorrect WorldEdit version " + version + ". Current accepted ones are : "
-            + Joiner.on(", ").join(WorldEditUtils.FAWE_VERSIONS) + ".");
-        return false;*/ // FAWE methods are (probably) stable with versions
     }
 
     /**
@@ -59,7 +51,9 @@ public interface Utils {
      * @return Whether the operation has been a success.
      */
 
-    boolean growTree(final Path schematic, final Location location);
+    GrowState growTree(final Path schematic, final Location location);
 
-
+    enum GrowState {
+        SUCCESS, LOAD_FAIL, PLACE_FAIL, UNKNOWN, OUT_OF_BOUNDS,
+    }
 }
