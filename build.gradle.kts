@@ -6,7 +6,6 @@ plugins {
 }
 
 group = "fr.skyost"
-val grp = group
 version = "1.0.0"
 
 repositories {
@@ -14,7 +13,6 @@ repositories {
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://maven.enginehub.org/repo/")
     maven("https://repo.codemc.org/repository/maven-public")
-    maven("https://jitpack.io")
 }
 
 dependencies {
@@ -23,7 +21,6 @@ dependencies {
     compileOnly("com.eclipsesource.minimal-json:minimal-json:0.9.5")
     compileOnly(platform("com.intellectualsites.bom:bom-newest:1.42"))
 
-    implementation("net.kyori:adventure-text-minimessage:4.16.0")
     implementation("org.zeroturnaround:zt-zip:1.14")
 }
 
@@ -39,16 +36,9 @@ tasks {
     }
 
     shadowJar {
-        archiveClassifier = ""
-        archiveVersion = ""
         mergeServiceFiles()
-        dependencies {
-            include(dependency("org.zeroturnaround::"))
-            include(dependency("net.kyori:adventure-text-minimessage"))
-            relocate("org.zeroturnaround.zip", "$grp.zip")
-            relocate("net.kyori.adventure.text.minimessage", "$grp.minimessage")
-        }
     }
+
     runServer {
         // Configure the Minecraft version for our task.
         // This is the only required configuration besides applying the plugin.
