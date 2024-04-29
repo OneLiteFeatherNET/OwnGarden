@@ -52,13 +52,13 @@ public record WorldEditTreeAPI(OwnGarden plugin) implements TreeAPI {
         for (final Map.Entry<Material, List<Path>> en : plugin.getTreeService().getTreeMap().entrySet()) {
             final List<Path> list = new ArrayList<>(en.getValue().size());
             for (final Path end : en.getValue()) {
-                final Path schem = Path.of(plugin.getTreeService().getTreeFolder().toString() + File.separator + end.toString());
+                final Path schem = plugin.getTreeService().getTreeFolder().resolve(end);
                 if (!Files.exists(schem)) {
-                    logger.error(Component.text("Schematic not found " + schem.toString(), NamedTextColor.RED));
+                    logger.error(Component.text("Schematic not found " + schem, NamedTextColor.RED));
                     pass = true;
                     continue;
                 }
-                Bukkit.getConsoleSender().sendMessage("Loaded: " + schem.toString());
+                Bukkit.getConsoleSender().sendMessage("Loaded: " + schem);
                 list.add(schem);
             }
             en.setValue(list);
@@ -78,10 +78,10 @@ public record WorldEditTreeAPI(OwnGarden plugin) implements TreeAPI {
 
     private ClipboardHolder loadSchematic(final Path path) throws IOException {
         if (!Files.exists(path)) {
-            throw new IOException("Schematic not found : " + path.toString());
+            throw new IOException("Schematic not found : " + path);
         }
         final ClipboardFormat format = ClipboardFormats.findByFile(new File(path.toUri()));
-        if (format == null) throw new IOException("Unknown schematic format : " + path.toString());
+        if (format == null) throw new IOException("Unknown schematic format : " + path);
         return new ClipboardHolder(format.getReader(new BufferedInputStream(Files.newInputStream(path))).read());
     }
 

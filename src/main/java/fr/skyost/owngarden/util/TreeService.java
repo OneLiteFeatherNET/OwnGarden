@@ -44,7 +44,7 @@ public final class TreeService {
      * @param match Consumer of the schmatic path.
      */
 
-    public void ifMatMatch(final Material mat, final Consumer<Path> match) {
+    public void ifMatMatch(final Material mat, final Consumer<? super Path> match) {
         final List<Path> files = treeMap.get(mat);
         if (files == null || files.isEmpty()) return;
         match.accept(files.get(rnd.nextInt(files.size())));
@@ -65,7 +65,6 @@ public final class TreeService {
         @SuppressWarnings("unchecked")
         final List<MaterialSchems> list = config.getObject(Constants.TREES, List.class, List.of());
         list.forEach(ms -> treeMap.put(ms.material(), ms.schematics()));
-//        logger.info(Component.text(treeMap.toString()));
     }
 
     /**
