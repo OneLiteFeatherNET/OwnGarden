@@ -1,0 +1,10 @@
+checkHeight: false
+randomRotation: true
+schematicsDirectory: 'trees'
+
+trees:
+  - material: OAK_SAPLING
+    schematics:
+      - 1.schematic
+      - 2.schematic
+      - 3.schematic
