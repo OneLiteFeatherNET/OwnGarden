@@ -5,6 +5,6 @@ schematicsDirectory: 'trees'
 trees:
   - material: OAK_SAPLING
     schematics:
-      - 1.schematic
-      - 2.schematic
-      - 3.schematic
+      - oak/1.schematic
+      - oak/2.schematic
+      - oak/3.schematic
