@@ -10,7 +10,8 @@ plugins {
 }
 
 group = "fr.skyost"
-version = "1.0.0"
+val baseVersion = "1.0.0"
+version = System.getenv("TAG_VERSION") ?: "$baseVersion-dev"
 
 repositories {
     mavenCentral()
