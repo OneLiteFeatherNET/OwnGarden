@@ -1,0 +1,30 @@
+name: Release
+on:
+  push:
+    tags:
+      - '*'
+jobs:
+  build:
+    strategy:
+      matrix:
+        java-version: [ '17' ]
+        os: [ 'ubuntu-latest']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+      - name: Setup Java ${{ matrix.java-version }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java-version }}
+          architecture: x64
+          distribution: "temurin"
+      - name: Publish with gradle
+        run: |
+          ./gradlew build
+          ./gradlew publishAllPublicationsToHangar
+          ./gradlew modrinth
+        env:
+          TAG_VERSION: ${{ github.ref_name }}
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_KEY }}
+          HANGAR_KEY: ${{secrets.HANGAR_KEY}}
