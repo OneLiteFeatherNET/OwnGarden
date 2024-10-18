@@ -21,7 +21,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit")
     compileOnly("com.eclipsesource.minimal-json:minimal-json:0.9.5")
     compileOnly(platform("com.intellectualsites.bom:bom-newest:1.42"))
