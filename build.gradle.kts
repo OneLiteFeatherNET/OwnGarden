@@ -30,6 +30,11 @@ dependencies {
 }
 
 tasks {
+
+    compileJava {
+        options.release = 21
+    }
+
     register<Zip>("createZip") {
         from("schematics")
         archiveFileName.set("schematics.zip")
