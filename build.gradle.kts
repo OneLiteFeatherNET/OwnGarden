@@ -83,7 +83,7 @@ modrinth {
     projectId.set("lI72N7Bx")
     versionType.set("release")
     uploadFile.set(tasks.shadowJar)
-    gameVersions.addAll(listOf("1.20.5","1.20.4","1.20.3", "1.20.2", "1.20.1", "1.20", "1.19.4", "1.19.3", "1.19.2", "1.19.1", "1.19"))
+    gameVersions.addAll(listOf("1.21.1", "1.20.6", "1.20.5", "1.20.4", "1.20.3", "1.20.2", "1.20.1", "1.20", "1.19.4", "1.19.3", "1.19.2", "1.19.1", "1.19"))
     loaders.add("paper")
 }
 
@@ -96,7 +96,7 @@ hangarPublish {
         platforms {
             paper {
                 jar.set(tasks.shadowJar.flatMap { it.archiveFile })
-                platformVersions.set(listOf("1.20.5","1.20.4","1.20.3", "1.20.2", "1.20.1", "1.20", "1.19.4", "1.19.3", "1.19.2", "1.19.1", "1.19"))
+                platformVersions.set(listOf("1.21.1", "1.21", "1.20.6", "1.20.5", "1.20.4", "1.20.3", "1.20.2", "1.20.1", "1.20", "1.19.4", "1.19.3", "1.19.2", "1.19.1", "1.19"))
             }
         }
     }
